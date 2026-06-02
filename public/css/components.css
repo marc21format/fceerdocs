@@ -711,8 +711,8 @@ select.customized {
 
 .custom-select-trigger:focus-visible,
 .custom-select-trigger.open {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
+  border-color: var(--line-strong);
+  box-shadow: 0 0 0 3px var(--select-hover-bg);
 }
 
 .custom-select-text {
@@ -792,14 +792,14 @@ select.customized {
 }
 
 .custom-select-option.selected {
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--panel-muted);
+  color: var(--text);
   font-weight: 500;
 }
 
 body[data-theme="dark"] .custom-select-option.selected {
-  background: rgba(29, 78, 216, 0.15);
-  color: #92b9ff;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
 }
 
 /* Disabled State */
