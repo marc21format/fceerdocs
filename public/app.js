@@ -407,6 +407,7 @@ export function render() {
   renderPages();
 }
 
+<<<<<<< HEAD
 function updateAlignBtnStates(btns, textAlign) {
   btns.forEach((btn) => btn.classList.toggle("active", btn.dataset.align === textAlign));
 }
@@ -419,6 +420,8 @@ function updateInstructionAlignBtnStates() {
   updateAlignBtnStates(elements.instructionAlignBtns, state.template.instructionBlock.style.textAlign || "center");
 }
 
+=======
+>>>>>>> c627fc6ad4062d8ea5ee1a4225406d4864ef3350
 function bindGlobalInputs() {
   elements.databaseSubject.innerHTML = SUBJECT_OPTIONS.map((subject) => `<option value="${escapeHtmlAttribute(subject)}">${escapeHtml(subject)}</option>`).join("");
   if (elements.databaseSourceExamType) {
@@ -809,6 +812,21 @@ function bindGlobalInputs() {
     elements.instructionTextInput
   );
 
+<<<<<<< HEAD
+=======
+  function updateAlignBtnStates(btns, textAlign) {
+    btns.forEach((btn) => btn.classList.toggle("active", btn.dataset.align === textAlign));
+  }
+
+  function updateTitleAlignBtnStates() {
+    updateAlignBtnStates(elements.titleAlignBtns, state.template.titleBlock.style.textAlign || "center");
+  }
+
+  function updateInstructionAlignBtnStates() {
+    updateAlignBtnStates(elements.instructionAlignBtns, state.template.instructionBlock.style.textAlign || "center");
+  }
+
+>>>>>>> c627fc6ad4062d8ea5ee1a4225406d4864ef3350
   function setupAlignButtons(btns, stateStyle, inputEl, updateFn) {
     btns.forEach((btn) => {
       btn.addEventListener("click", () => {

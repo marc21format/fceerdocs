@@ -95,17 +95,10 @@ export function normalizeQuestionForStorage(question = {}, index = 0) {
 
   return {
     _id: String(question._id || question.id || randomUUID()),
-    order: Number.isFinite(Number(question.order)) ? Number(question.order) : index,
     subject,
-    sourceSubject,
     topic: String(question.topic || ""),
     examType,
-    sourceExamType: allowedExamTypes.includes(String(question.sourceExamType || "").toLowerCase())
-      ? String(question.sourceExamType).toLowerCase()
-      : examType,
     examNumber: Number.isFinite(Number(question.examNumber)) ? Number(question.examNumber) : 1,
-    sourceExamNumber: Number.isFinite(Number(question.sourceExamNumber)) ? Number(question.sourceExamNumber) : Number.isFinite(Number(question.examNumber)) ? Number(question.examNumber) : 1,
-    examItemsCount: Number.isFinite(Number(question.examItemsCount)) ? Number(question.examItemsCount) : index + 1,
     savedBy,
     savedAt,
     stem: String(question.stem || ""),
@@ -124,6 +117,6 @@ export function toQuestionResponse(question) {
 
 export async function listQuestions() {
   const collection = await getQuestionsCollection();
-  const questions = await collection.find({}).sort({ order: 1, createdAt: 1 }).toArray();
+  const questions = await collection.find({}).sort({ createdAt: 1 }).toArray();
   return questions.map(toQuestionResponse);
 }
