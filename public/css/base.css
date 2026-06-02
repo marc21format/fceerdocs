@@ -1,0 +1,245 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
+
+/* ─── Design Tokens ──────────────────────────────────────────────────────── */
+:root {
+  color-scheme: light;
+
+  /* Surfaces */
+  --bg:           #f0f1f4;
+  --panel:        #ffffff;
+  --panel-muted:  #f7f8fa;
+  --panel-inset:  #eff0f3;
+  --glass:        rgba(255,255,255,0.72);
+
+  /* Lines */
+  --line:         rgba(0,0,0,0.08);
+  --line-strong:  rgba(0,0,0,0.14);
+  --line-subtle:  rgba(0,0,0,0.05);
+
+  /* Text */
+  --text:         #0d1117;
+  --text-soft:    #6b7385;
+  --text-muted:   #9ea8b8;
+  --text-on-accent: #ffffff;
+
+  /* Accent — a deep cobalt, not generic blue */
+  --accent:       #1d4ed8;
+  --accent-hover: #1e40af;
+  --accent-soft:  #eff4ff;
+  --accent-glow:  rgba(29,78,216,0.12);
+
+  /* Danger */
+  --danger:       #b91c1c;
+  --danger-soft:  #fef2f2;
+
+  /* Success */
+  --success:      #047857;
+
+  /* Elevation */
+  --shadow-xs:    0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm:    0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:    0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+  --shadow-lg:    0 12px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-xl:    0 24px 64px rgba(0,0,0,0.16), 0 4px 12px rgba(0,0,0,0.08);
+
+  /* Shape */
+  --radius-sm:    8px;
+  --radius-md:    12px;
+  --radius-lg:    16px;
+  --radius-xl:    20px;
+  --radius-pill:  999px;
+
+  /* Typography */
+  --font-ui:      'DM Sans', system-ui, sans-serif;
+  --font-mono:    'DM Mono', 'SFMono-Regular', Consolas, monospace;
+
+  /* Page */
+  --page-bg:      #ffffff;
+  --page-line:    #e2e5eb;
+  --preview-bg:   #e4e7ed;
+
+  /* Toolbar */
+  --toolbar-bg:   rgba(255,255,255,0.88);
+  --toolbar-blur: blur(16px) saturate(180%);
+  --sidebar-width: 350px;
+}
+
+/* ─── Dark Theme ─────────────────────────────────────────────────────────── */
+body[data-theme="dark"] {
+  color-scheme: dark;
+  --bg:           #0a0c0f;
+  --panel:        #12151a;
+  --panel-muted:  #0f1216;
+  --panel-inset:  #0c0e12;
+  --glass:        rgba(18,21,26,0.82);
+  --line:         rgba(255,255,255,0.07);
+  --line-strong:  rgba(255,255,255,0.12);
+  --line-subtle:  rgba(255,255,255,0.04);
+  --text:         #edf0f5;
+  --text-soft:    #7b889e;
+  --text-muted:   #4a5566;
+  --accent:       #6ea3ff;
+  --accent-hover: #92b9ff;
+  --accent-soft:  #0f1e3a;
+  --accent-glow:  rgba(110,163,255,0.10);
+  --danger:       #f87171;
+  --danger-soft:  #1c0a0a;
+  --shadow-xs:    0 1px 2px rgba(0,0,0,0.30);
+  --shadow-sm:    0 2px 8px rgba(0,0,0,0.40), 0 1px 2px rgba(0,0,0,0.25);
+  --shadow-md:    0 4px 16px rgba(0,0,0,0.50), 0 1px 4px rgba(0,0,0,0.30);
+  --shadow-lg:    0 12px 40px rgba(0,0,0,0.60), 0 2px 8px rgba(0,0,0,0.35);
+  --shadow-xl:    0 24px 64px rgba(0,0,0,0.70), 0 4px 12px rgba(0,0,0,0.40);
+  --toolbar-bg:   rgba(12,14,18,0.90);
+  --preview-bg:   #070809;
+}
+
+/* ─── Reset & Base ───────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+
+html { height: 100%; margin: 0; padding: 0; }
+
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+button, input, select, textarea { font: inherit; }
+
+/* ─── Form Controls ──────────────────────────────────────────────────────── */
+textarea, input[type="text"], input[type="number"], input[type="search"], select {
+  width: 100%;
+  background: var(--panel-inset);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 9px 12px;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+  outline: none;
+  appearance: none;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="search"]:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  background: var(--panel);
+}
+
+input[type="file"] {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: var(--radius-md);
+  color: var(--text-soft);
+  background: var(--panel-muted);
+  cursor: pointer;
+  transition: border-color 150ms, background 150ms;
+}
+
+input[type="file"]:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+textarea { resize: vertical; }
+
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7385' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  padding-right: 32px;
+}
+
+label {
+  display: block;
+  color: var(--text-soft);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.label-text {
+  display: block;
+  color: var(--text-soft);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  margin-bottom: 6px;
+}
+
+label > input,
+label > select,
+label > textarea {
+  margin-top: 5px;
+  color: var(--text);
+  font-size: 13.5px;
+}
+
+/* ─── Theme FAB ──────────────────────────────────────────────────────────── */
+.theme-fab {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+  box-shadow: var(--shadow-md);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+  padding: 0;
+}
+
+.theme-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  background: var(--panel-muted);
+}
+
+.theme-fab:active {
+  transform: scale(0.95);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-fab svg {
+  width: 20px;
+  height: 20px;
+}
+
+.theme-fab .icon-sun {
+  display: none;
+}
+.theme-fab .icon-moon {
+  display: block;
+}
+
+body[data-theme="dark"] .theme-fab .icon-moon {
+  display: none;
+}
+body[data-theme="dark"] .theme-fab .icon-sun {
+  display: block;
+}
+
+
+@media print {
+  .theme-fab { display: none !important; }
+}
+
