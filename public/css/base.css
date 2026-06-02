@@ -61,7 +61,7 @@
   /* Toolbar */
   --toolbar-bg:   rgba(255,255,255,0.88);
   --toolbar-blur: blur(16px) saturate(180%);
-  --sidebar-width: 350px;
+  --sidebar-width: 400px;
 }
 
 /* ─── Dark Theme ─────────────────────────────────────────────────────────── */

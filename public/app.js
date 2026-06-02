@@ -138,7 +138,9 @@ export const elements = {
   undoBtn: document.querySelector("#undo-btn"),
   redoBtn: document.querySelector("#redo-btn"),
   fontFamily: document.querySelector("#global-font-family"),
-  bodyLayoutMode: document.querySelector("#body-layout-mode"),
+  bodyLayoutMode: null,
+  layoutSingleBtn: document.querySelector("#layout-single-btn"),
+  layoutTwoBtn: document.querySelector("#layout-two-btn"),
   headerImageInput: document.querySelector("#header-image-input"),
   examSubjectInput: document.querySelector("#exam-subject-input"),
   examTypeInput: document.querySelector("#exam-type-input"),
@@ -311,11 +313,11 @@ function syncToolbarFields() {
   populateFontSelect(elements.questionFontFamilyInput);
   const isTwoColumn = state.pageLayout.bodyLayoutMode === "two-column-compact";
   if (elements.columnGapField) elements.columnGapField.hidden = !isTwoColumn;
-  if (elements.columnGapInput) elements.columnGapInput.disabled = !isTwoColumn;
   elements.fontFamily.value = state.template.titleBlock.style.fontFamily;
   if (elements.questionFontFamilyInput) elements.questionFontFamilyInput.value = state.questionStyle.fontFamily;
   if (elements.questionFontSizeInput) elements.questionFontSizeInput.value = state.questionStyle.fontSize;
-  elements.bodyLayoutMode.value = state.pageLayout.bodyLayoutMode;
+  if (elements.layoutSingleBtn) elements.layoutSingleBtn.classList.toggle("active", !isTwoColumn);
+  if (elements.layoutTwoBtn) elements.layoutTwoBtn.classList.toggle("active", isTwoColumn);
   elements.examSubjectInput.value = state.examDetails.subject;
   elements.examTypeInput.value = state.examDetails.examType;
   if (state.examDetails.examType === 'mock test') {
@@ -607,12 +609,16 @@ function bindGlobalInputs() {
     syncToolbarFields();
   });
 
-  elements.bodyLayoutMode.addEventListener("change", (event) => {
-    state.pageLayout.bodyLayoutMode = event.target.value;
+  function setLayoutMode(mode) {
+    if (state.pageLayout.bodyLayoutMode === mode) return;
+    state.pageLayout.bodyLayoutMode = mode;
     saveState("Layout mode updated");
     renderPages();
     syncToolbarFields();
-  });
+  }
+
+  elements.layoutSingleBtn?.addEventListener("click", () => setLayoutMode("single-column"));
+  elements.layoutTwoBtn?.addEventListener("click", () => setLayoutMode("two-column-compact"));
 
   navButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -709,6 +715,22 @@ function bindGlobalInputs() {
     state.pageLayout.columnGap = clamped;
     event.target.value = String(clamped);
     rerenderPreview("Column gap updated");
+  });
+
+  document.querySelectorAll(".chevron-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const targetId = btn.dataset.target;
+      const input = document.getElementById(targetId);
+      if (!input) return;
+      const step = Number(input.step) || 1;
+      const min = Number(input.min) || 0;
+      const max = Number(input.max) || 999;
+      const dir = btn.dataset.dir === "up" ? 1 : -1;
+      const raw = Number(input.value) || 0;
+      const next = Math.min(max, Math.max(min, raw + dir * step));
+      input.value = String(next);
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
   });
 
   elements.questionFontFamilyInput?.addEventListener("change", (event) => {
@@ -910,9 +932,9 @@ const hideContextMenu = () => {
   if (contextMenu && !contextMenu.hidden) contextMenu.hidden = true;
 };
 
-// Show on right-click over a question-preview
+// Show on right-click over a question-preview or question-editor-card
 document.addEventListener("contextmenu", (event) => {
-  const targetQuestion = event.target.closest(".question-preview");
+  const targetQuestion = event.target.closest(".question-preview") || event.target.closest(".question-editor-card");
   if (!targetQuestion) { hideContextMenu(); return; }
 
   event.preventDefault();
@@ -920,7 +942,7 @@ document.addEventListener("contextmenu", (event) => {
 
   if (contextMenu) {
     const vw = window.innerWidth, vh = window.innerHeight;
-    const mw = 160, mh = 120;
+    const mw = 160, mh = 160;
     contextMenu.style.left = `${Math.min(event.clientX, vw - mw)}px`;
     contextMenu.style.top  = `${Math.min(event.clientY, vh - mh)}px`;
     contextMenu.hidden = false;
@@ -996,6 +1018,39 @@ contextMenu?.addEventListener("click", (event) => {
     renderPages();
     syncToolbarFields();
     queueQuestionSync("Question removed via context menu");
+
+  } else if (action === "duplicate") {
+    const question = state.questions.find((q) => q.id === qId);
+    if (!question) return;
+    const copy = structuredClone(question);
+    copy.id = crypto.randomUUID();
+    copy.collapsed = false;
+    copy.choices = copy.choices.map((choice) => ({ ...choice, id: crypto.randomUUID() }));
+    copy.correctChoiceId = copy.choices[0]?.id || "";
+    const index = state.questions.findIndex((q) => q.id === qId);
+    state.questions.splice(index + 1, 0, copy);
+    normalizeNumbers();
+    renderPages();
+    syncToolbarFields();
+    renderQuestionEditors();
+    queueQuestionSync("Question duplicated");
+
+  } else if (action === "save") {
+    const question = state.questions.find((q) => q.id === qId);
+    if (!question) return;
+    (async () => {
+      try {
+        const saveMeta = uiState.saveConfirmSkipRestOfSession && saveConfirmKnownName
+          ? { savedBy: saveConfirmKnownName, savedAt: new Date().toISOString() }
+          : await openSaveConfirmModal(question);
+        if (!saveMeta) return;
+        await saveQuestionToDatabase(question, saveMeta);
+        setStatus(`Question ${question.number} saved to MongoDB`);
+      } catch (error) {
+        console.warn("Question save failed", error);
+        setStatus(error.message.includes("MONGODB_URI") ? "MongoDB is not configured" : error.message);
+      }
+    })();
   }
 });
 

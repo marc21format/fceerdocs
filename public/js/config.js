@@ -24,9 +24,9 @@ export const QUESTION_IMAGE_MAX_DIMENSION = 1600;
 export const QUESTION_IMAGE_JPEG_QUALITY = 0.86;
 export const PX_PER_INCH = 96;
 export const HALF_INCH = PX_PER_INCH / 2;
-export const SIDEBAR_MIN_WIDTH = 240;
+export const SIDEBAR_MIN_WIDTH = 340;
 export const SIDEBAR_MAX_WIDTH = 650;
-export const SIDEBAR_DEFAULT_WIDTH = 350;
+export const SIDEBAR_DEFAULT_WIDTH = 400;
 export const PAGE_MIN_WIDTH = 840;
 
 export const defaultState = {

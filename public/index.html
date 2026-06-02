@@ -355,64 +355,112 @@
           <div class="settings-card" data-panel="questions">
             <div class="section-heading">
               <h2>Questions</h2>
-              <div class="toolbar-actions">
-                <button id="add-question-btn" class="toolbar-btn small">Add Question</button>
-              </div>
             </div>
             <div class="panel-body">
-              <div class="two-col-grid">
-                <label>
-                  Font
-                  <select id="global-font-family"></select>
-                </label>
-                <label>
-                  Question font size
+              <select id="global-font-family" class="style-select"></select>
+              <div class="style-row" id="style-row">
+                <div class="style-pill style-pill--sm">
+                  <svg class="style-pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 7V4h16v3M9 20h6M12 4v16"/>
+                  </svg>
                   <input id="question-font-size-input" type="number" min="6" max="32" step="0.1" />
-                </label>
-              </div>
-              <label>
-                Layout
-                <select id="body-layout-mode">
-                  <option value="two-column-compact">Two Column</option>
-                  <option value="single-column">Single Column</option>
-                </select>
-              </label>
-              <div class="two-col-grid">
-                <label>
-                  Question gap (px)
+                  <div class="chevron-stack">
+                    <button class="chevron-btn" data-target="question-font-size-input" data-dir="up">
+                      <svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 2L9 8H1z"/></svg>
+                    </button>
+                    <button class="chevron-btn" data-target="question-font-size-input" data-dir="down">
+                      <svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 8L1 2H9z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <button id="layout-single-btn" class="style-btn" title="Single Column">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="4" y="4" width="16" height="16" rx="2"/>
+                  </svg>
+                </button>
+                <button id="layout-two-btn" class="style-btn" title="Two Column">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="7" height="16" rx="1.5"/>
+                    <rect x="14" y="4" width="7" height="16" rx="1.5"/>
+                  </svg>
+                </button>
+                <div class="style-pill style-pill--sm">
+                  <svg class="style-pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 18L12 6M12 18L9 16M12 18L15 16M12 6L9 8M12 6L15 8M21 3H3M21 21H3"/>
+                  </svg>
                   <input id="question-gap-input" type="number" min="0" max="32" step="1" />
-                </label>
-                <label id="column-gap-field">
-                  Column gap (px)
+                  <div class="chevron-stack">
+                    <button class="chevron-btn" data-target="question-gap-input" data-dir="up">
+                      <svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 2L9 8H1z"/></svg>
+                    </button>
+                    <button class="chevron-btn" data-target="question-gap-input" data-dir="down">
+                      <svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 8L1 2H9z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div id="column-gap-field" class="style-pill style-pill--sm" hidden>
+                  <svg class="style-pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 12H18M6 12L8 9M6 12L8 15M18 12L16 9M18 12L16 15M21 21V3M3 21V3"/>
+                  </svg>
                   <input id="column-gap-input" type="number" min="0" max="120" step="1" />
-                </label>
-                <label>
-                  Left margin
+                  <div class="chevron-stack">
+                    <button class="chevron-btn" data-target="column-gap-input" data-dir="up">
+                      <svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 2L9 8H1z"/></svg>
+                    </button>
+                    <button class="chevron-btn" data-target="column-gap-input" data-dir="down">
+                      <svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 8L1 2H9z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="style-pill style-pill--sm">
+                  <svg class="style-pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 3V21M21 12H7M7 12L14 19M7 12L14 5"/>
+                  </svg>
                   <input id="page-margin-left-input" type="number" min="0" step="0.1" />
-                </label>
-                <label>
-                  Right margin
+                  <div class="chevron-stack">
+                    <button class="chevron-btn" data-target="page-margin-left-input" data-dir="up">
+                      <svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 2L9 8H1z"/></svg>
+                    </button>
+                    <button class="chevron-btn" data-target="page-margin-left-input" data-dir="down">
+                      <svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 8L1 2H9z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="style-pill style-pill--sm">
+                  <svg class="style-pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 21V3M3 12H17M17 12L10 5M17 12L10 19"/>
+                  </svg>
                   <input id="page-margin-right-input" type="number" min="0" step="0.1" />
-                </label>
+                  <div class="chevron-stack">
+                    <button class="chevron-btn" data-target="page-margin-right-input" data-dir="up">
+                      <svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 2L9 8H1z"/></svg>
+                    </button>
+                    <button class="chevron-btn" data-target="page-margin-right-input" data-dir="down">
+                      <svg viewBox="0 0 10 10" fill="currentColor"><path d="M5 8L1 2H9z"/></svg>
+                    </button>
+                  </div>
+                </div>
               </div>
-              <p id="question-gap-scope-label" class="hint">Applies to all pages and columns.</p>
 
               <div class="panel-divider"></div>
 
-              <div class="hint-inline">
-                <button
-                  type="button"
-                  class="hint-icon-btn"
-                  aria-describedby="question-inline-hint"
-                  aria-label="Inline label help"
-                >
-                  <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </button>
-                <span id="question-inline-hint" class="hint-popover" role="tooltip">
-                  Use <code>[[word::A]]</code> for inline labels and <code>%% x^2 + \frac{1}{2} %%</code> for math.
-                </span>
+              <div class="add-question-row">
+                <button id="add-question-btn" class="toolbar-btn small">Add Question</button>
+                <div class="hint-inline">
+                  <button
+                    type="button"
+                    class="hint-icon-btn"
+                    aria-describedby="question-inline-hint"
+                    aria-label="Inline label help"
+                  >
+                    <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </button>
+                  <span id="question-inline-hint" class="hint-popover" role="tooltip">
+                    Use <code>[[word::A]]</code> for inline labels and <code>%% x^2 + \frac{1}{2} %%</code> for math.
+                  </span>
+                </div>
               </div>
 
               <div id="question-list" class="question-list"></div>
@@ -566,23 +614,6 @@
             <div class="question-editor-header-content">
               <strong class="question-title"></strong>
               <p class="question-preview-text"></p>
-            </div>
-            <div class="question-editor-actions">
-              <button class="toolbar-btn small icon-btn save-question-btn" type="button" title="Save" aria-label="Save question">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M4 16.2422C2.79401 15.435 2 14.0602 2 12.5C2 10.1564 3.79151 8.23129 6.07974 8.01937C6.54781 5.17213 9.02024 3 12 3C14.9798 3 17.4522 5.17213 17.9203 8.01937C20.2085 8.23129 22 10.1564 22 12.5C22 14.0602 21.206 15.435 20 16.2422M8 16L12 12M12 12L16 16M12 12V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-              <button class="toolbar-btn small icon-btn duplicate-question-btn" type="button" title="Duplicate" aria-label="Duplicate question">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M5 15C4.06812 15 3.60218 15 3.23463 14.8478C2.74458 14.6448 2.35523 14.2554 2.15224 13.7654C2 13.3978 2 12.9319 2 12V5.2C2 4.0799 2 3.51984 2.21799 3.09202C2.40973 2.71569 2.71569 2.40973 3.09202 2.21799C3.51984 2 4.0799 2 5.2 2H12C12.9319 2 13.3978 2 13.7654 2.15224C14.2554 2.35523 14.6448 2.74458 14.8478 3.23463C15 3.60218 15 4.06812 15 5M12.2 22H18.8C19.9201 22 20.4802 22 20.908 21.782C21.2843 21.5903 21.5903 21.2843 21.782 20.908C22 20.4802 22 19.9201 22 18.8V12.2C22 11.0799 22 10.5198 21.782 10.092C21.5903 9.71569 21.2843 9.40973 20.908 9.21799C20.4802 9 19.9201 9 18.8 9H12.2C11.0799 9 10.5198 9 10.092 9.21799C9.71569 9.40973 9.40973 9.71569 9.21799 10.092C9 10.5198 9 11.0799 9 12.2V18.8C9 19.9201 9 20.4802 9.21799 20.908C9.40973 21.2843 9.71569 21.5903 10.092 21.782C10.5198 22 11.0799 22 12.2 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-              <button class="toolbar-btn small icon-btn delete-question-btn danger" type="button" title="Delete" aria-label="Delete question">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M16 6V5.2C16 4.0799 16 3.51984 15.782 3.09202C15.5903 2.71569 15.2843 2.40973 14.908 2.21799C14.4802 2 13.9201 2 12.8 2H11.2C10.0799 2 9.51984 2 9.09202 2.21799C8.71569 2.40973 8.40973 2.71569 8.21799 3.09202C8 3.51984 8 4.0799 8 5.2V6M10 11.5V16.5M14 11.5V16.5M3 6H21M19 6V17.2C19 18.8802 19 19.7202 18.673 20.362C18.3854 20.9265 17.9265 21.3854 17.362 21.673C16.7202 22 15.8802 22 14.2 22H9.8C8.11984 22 7.27976 22 6.63803 21.673C6.07354 21.3854 5.6146 20.9265 5.32698 20.362C5 19.7202 5 18.8802 5 17.2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
             </div>
           </summary>
         <div class="question-editor-body">
@@ -826,6 +857,14 @@
       <button class="context-item" data-action="go-to-editor">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         Go to Editor
+      </button>
+      <button class="context-item" data-action="duplicate">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Duplicate
+      </button>
+      <button class="context-item" data-action="save">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Save to DB
       </button>
       <div class="context-divider"></div>
       <button class="context-item danger" data-action="delete">

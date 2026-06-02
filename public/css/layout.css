@@ -240,7 +240,7 @@ body.sidebar-resizing .sidebar-resizer::after {
 }
 
 .panel-body {
-  padding: 10px 12px 40px;
+  padding: 4px 12px 40px;
   display: grid;
   align-content: start;
   gap: 10px;
@@ -256,7 +256,7 @@ body.sidebar-resizing .sidebar-resizer::after {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 12px 12px;
+  padding: 10px 12px 2px;
 }
 
 .section-heading h2 {
@@ -274,9 +274,14 @@ body.sidebar-resizing .sidebar-resizer::after {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  width: fit-content;
   max-width: 100%;
-  justify-self: end;
+}
+
+.add-question-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .hint-icon-btn {
@@ -345,6 +350,156 @@ body.sidebar-resizing {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+}
+
+/* ─── Compact Style Row ─────────────────────────────────────────────────── */
+.style-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.style-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 28px;
+  padding: 0 4px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+/* Font select - full width row */
+.style-select {
+  width: 100%;
+  padding: 0 22px 0 8px;
+  height: 28px;
+  font-size: 12px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%237b889e' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  background-size: 10px;
+}
+
+/* Numeric pill */
+.style-pill--num {
+  gap: 1px;
+}
+.style-pill--num input {
+  width: 24px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  height: 100%;
+  font-size: 11px;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+.style-pill--num input::-webkit-outer-spin-button,
+.style-pill--num input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.style-pill--num input:focus {
+  border: none;
+  box-shadow: none;
+}
+
+/* Small numeric pill (gaps/margins) */
+.style-pill--sm {
+  gap: 1px;
+  padding: 0 3px;
+}
+.style-pill--sm input {
+  width: 20px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  height: 100%;
+  font-size: 11px;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+.style-pill--sm input::-webkit-outer-spin-button,
+.style-pill--sm input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.style-pill--sm input:focus {
+  border: none;
+  box-shadow: none;
+}
+
+.style-pill-icon {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  opacity: 0.45;
+}
+
+/* Icon-only button */
+.style-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: background 120ms, color 120ms, border-color 120ms;
+  flex-shrink: 0;
+}
+.style-btn svg {
+  width: 14px;
+  height: 14px;
+}
+.style-btn:hover {
+  background: var(--accent-soft);
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+.style-btn.active {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border-color: var(--accent);
+}
+
+/* Chevron buttons */
+.chevron-stack {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+.chevron-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
+  cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+.chevron-btn:hover {
+  opacity: 1;
+}
+.chevron-btn svg {
+  width: 6px;
+  height: 6px;
 }
 
 /* ─── Page Ruler ─────────────────────────────────────────────────────────── */

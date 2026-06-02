@@ -6,8 +6,7 @@ import {
   createQuestionTemplate,
   setQuestionCorrectChoice,
   addQuestionFromTemplate,
-  moveQuestionBefore,
-  saveConfirmKnownName
+  moveQuestionBefore
 } from './state.js';
 import {
   PAGE,
@@ -33,10 +32,6 @@ import {
 } from './image-utils.js';
 import { renderStyledTextParts } from './math-render.js';
 import { startDragAction } from './drag.js';
-import {
-  openSaveConfirmModal,
-  saveQuestionToDatabase
-} from './database.js';
 
 const _cbs = {
   syncToolbarFields: () => {},
@@ -251,53 +246,6 @@ export function buildQuestionEditor(question) {
   card.addEventListener("toggle", () => {
     question.collapsed = !card.open;
     _cbs.queueQuestionSync(`Question ${question.number} ${card.open ? "expanded" : "collapsed"}`);
-  });
-
-  const duplicateBtn = fragment.querySelector(".duplicate-question-btn");
-  const saveBtn = fragment.querySelector(".save-question-btn");
-  const deleteBtn = fragment.querySelector(".delete-question-btn");
-  saveBtn.addEventListener("click", async (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    try {
-      const saveMeta = uiState.saveConfirmSkipRestOfSession && saveConfirmKnownName
-        ? { savedBy: saveConfirmKnownName, savedAt: new Date().toISOString() }
-        : await openSaveConfirmModal(question);
-      if (!saveMeta) return;
-      await saveQuestionToDatabase(question, saveMeta);
-      _cbs.setStatus(`Question ${question.number} saved to MongoDB`);
-    } catch (error) {
-      console.warn("Question save failed", error);
-      _cbs.setStatus(error.message.includes("MONGODB_URI") ? "MongoDB is not configured" : error.message);
-    }
-  });
-  duplicateBtn.addEventListener("click", (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    const copy = structuredClone(question);
-    copy.id = crypto.randomUUID();
-    copy.collapsed = false;
-    copy.choices = copy.choices.map((choice) => ({ ...choice, id: crypto.randomUUID() }));
-    copy.correctChoiceId = copy.choices[0]?.id || "";
-    const index = state.questions.findIndex((item) => item.id === question.id);
-    state.questions.splice(index + 1, 0, copy);
-    normalizeNumbers();
-    renderPages();
-    _cbs.syncToolbarFields();
-    _cbs.queueQuestionSync("Question duplicated");
-  });
-  deleteBtn.addEventListener("click", (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    if (state.questions.length === 1) {
-      _cbs.setStatus("At least one question is required");
-      return;
-    }
-    state.questions = state.questions.filter((item) => item.id !== question.id);
-    normalizeNumbers();
-    renderPages();
-    _cbs.syncToolbarFields();
-    _cbs.queueQuestionSync("Question removed");
   });
 
   const stemInput = fragment.querySelector(".question-stem-input");

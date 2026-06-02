@@ -514,41 +514,6 @@ details.question-editor-card > summary::after { display: none; }
 
 .question-editor-card[open] .question-preview-text { display: none; }
 
-.question-editor-actions {
-  display: flex;
-  gap: 2px;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.icon-btn {
-  width: 32px;
-  height: 32px;
-  display: inline-grid;
-  place-items: center;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 13px;
-  line-height: 1;
-  box-shadow: none;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: background 120ms ease, color 120ms ease;
-}
-
-.icon-btn:hover {
-  border: none;
-  background: var(--panel-inset);
-  color: var(--accent);
-}
-
-.icon-btn.danger:hover {
-  background: var(--danger-soft);
-  color: var(--danger);
-}
-
 .question-editor-body {
   padding: 8px 12px 10px;
   display: grid;

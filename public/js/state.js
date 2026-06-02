@@ -113,7 +113,7 @@ export function normalizeState(nextState) {
     nextState.examDetails.itemsCount = nextState.questions.length || defaultState.examDetails.itemsCount;
   }
   nextState.ui.sidebarWidth = clampNonNegativeInteger(nextState.ui.sidebarWidth, defaultState.ui.sidebarWidth);
-  nextState.ui.sidebarWidth = clamp(nextState.ui.sidebarWidth || defaultState.ui.sidebarWidth, 240, 650); // SIDEBAR_MIN_WIDTH, SIDEBAR_MAX_WIDTH
+  nextState.ui.sidebarWidth = clamp(nextState.ui.sidebarWidth || defaultState.ui.sidebarWidth, 340, 650); // SIDEBAR_MIN_WIDTH, SIDEBAR_MAX_WIDTH
   if (!nextState.examDetails.subject) nextState.examDetails.subject = defaultState.examDetails.subject;
   if (!nextState.examDetails.examType) nextState.examDetails.examType = defaultState.examDetails.examType;
   if (!Number.isFinite(Number(nextState.examDetails.examNumber))) nextState.examDetails.examNumber = defaultState.examDetails.examNumber;
