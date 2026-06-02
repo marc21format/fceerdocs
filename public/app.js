@@ -112,6 +112,8 @@ import {
   useSelectedDatabaseQuestionInBuilder,
   closeDuplicateSaveModal,
   closeSaveConfirmModal,
+  openSaveConfirmModal,
+  saveQuestionToDatabase,
   getSelectedDatabaseQuestion,
   syncDatabaseFilters
 } from './js/database.js';
