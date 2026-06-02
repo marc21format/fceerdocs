@@ -1,0 +1,850 @@
+
+/* ─── Buttons ────────────────────────────────────────────────────────────── */
+.toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line-strong);
+  background: var(--panel);
+  color: var(--text);
+  border-radius: var(--radius-pill);
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease, box-shadow 140ms ease, transform 80ms ease;
+  white-space: nowrap;
+  box-shadow: var(--shadow-xs);
+  text-decoration: none;
+  line-height: 1;
+}
+
+.toolbar-btn:hover {
+  background: var(--panel-muted);
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-sm);
+}
+
+.toolbar-btn:active {
+  transform: scale(0.97);
+  box-shadow: var(--shadow-xs);
+}
+
+.toolbar-btn.primary {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border-color: transparent;
+  box-shadow: 0 2px 8px rgba(29,78,216,0.15);
+  font-weight: 600;
+}
+
+.toolbar-btn.primary:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 4px 12px rgba(29,78,216,0.20);
+}
+
+.toolbar-btn.small {
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: var(--radius-sm);
+}
+
+.toolbar-btn.danger {
+  color: var(--danger);
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.toolbar-btn.danger:hover {
+  background: var(--danger-soft);
+  border-color: rgba(185,28,28,0.2);
+}
+
+.toolbar-btn[hidden] { display: none !important; }
+
+/* ─── Format Toolbar ─────────────────────────────────────────────────────── */
+.format-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.format-label {
+  font-size: 13px;
+  color: var(--text-soft);
+  font-weight: 500;
+}
+
+.format-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.format-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-soft);
+  transition: all 150ms ease;
+}
+
+.format-btn input[type="checkbox"] {
+  display: none;
+}
+
+.format-btn:hover {
+  background: var(--line-strong);
+  color: var(--text);
+}
+
+.format-btn:has(input:checked) {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* ─── Stem Editor Toolbar ──────────────────────────────────────────────── */
+.stem-editor-wrap {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel-inset);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.stem-editor-wrap:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.stem-editor-toolbar {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--line);
+  padding: 4px 6px;
+}
+
+.passage-editor-toolbar {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.passage-toolbar-left,
+.passage-toolbar-center,
+.passage-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.passage-toolbar-center {
+  gap: 4px;
+}
+
+.passage-fontsize-display {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  user-select: none;
+}
+
+.passage-tool-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.passage-tool-btn:hover {
+  color: var(--text);
+}
+
+.passage-tool-btn.active {
+  color: var(--primary);
+}
+
+.passage-align-btn.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.toolbar-separator {
+  width: 1px;
+  height: 16px;
+  background: var(--line);
+  margin: 0 4px;
+}
+
+.stem-format-btns {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  justify-content: flex-end;
+}
+
+.stem-format-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.stem-format-btn:hover {
+  background: var(--line-strong);
+  color: var(--text);
+}
+
+.stem-format-btn.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+body[data-theme="dark"] .stem-format-btn.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+}
+
+.title-editor-wrap,
+.instruction-editor-wrap {
+  flex-direction: column;
+}
+
+.title-editor-toolbar,
+.instruction-editor-toolbar {
+  border-top: 1px solid var(--line);
+  padding: 4px 6px;
+}
+
+.field-label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-soft);
+  font-weight: 500;
+  margin-bottom: 4px;
+  margin-top: 10px;
+}
+
+.field-label:first-child {
+  margin-top: 0;
+}
+
+.title-text-input,
+.instruction-text-input {
+  min-height: 32px;
+  max-height: 150px;
+  overflow-y: auto;
+  padding: 8px 12px;
+  font-family: var(--font-ui);
+  font-size: 13.5px;
+  color: var(--text);
+  outline: none;
+  line-height: 1.5;
+}
+
+.title-text-input:empty::before,
+.instruction-text-input:empty::before {
+  content: attr(data-placeholder);
+  color: var(--text-soft);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.title-text-input b,
+.instruction-text-input b { font-weight: 700; }
+.title-text-input i,
+.instruction-text-input i { font-style: italic; }
+.title-text-input u,
+.instruction-text-input u { text-decoration: underline; }
+
+.question-stem-input[contenteditable] {
+  width: 100%;
+  min-height: 80px;
+  padding: 9px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  outline: none;
+  box-sizing: border-box;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.question-stem-input[contenteditable] b { font-weight: 700; }
+.question-stem-input[contenteditable] i { font-style: italic; }
+.question-stem-input[contenteditable] u { text-decoration: underline; }
+
+.question-passage-input[contenteditable] {
+  width: 100%;
+  min-height: 60px;
+  padding: 9px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  outline: none;
+  box-sizing: border-box;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.question-passage-input[contenteditable]:empty::before {
+  content: attr(data-placeholder);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.question-passage-input[contenteditable] b { font-weight: 700; }
+.question-passage-input[contenteditable] i { font-style: italic; }
+.question-passage-input[contenteditable] u { text-decoration: underline; }
+
+/* ─── Inline Editing ─────────────────────────────────────────────────────── */
+.preview-editable {
+  cursor: text;
+  border-radius: 3px;
+  min-height: 1em;
+  display: block;
+  width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.inline-text-editor {
+  /* always fill parent, never exceed column width */
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-height: 1.2em;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  line-height: inherit;
+  background: rgba(255,255,255,0.98);
+  background-color: rgba(255,255,255,0.98);
+  color-scheme: light;
+  resize: none;
+  overflow: hidden;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  outline: 1.5px dashed rgba(29,78,216,0.45);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+body[data-theme="dark"] .inline-text-editor {
+  background: rgba(255,255,255,0.98);
+  background-color: rgba(255,255,255,0.98);
+}
+
+/* ─── File Input (styled as button) ─────────────────────────────────────── */
+/* Hide native input, expose via label wrapper */
+.file-input-wrapper {
+  position: relative;
+  display: block;
+}
+
+.file-input-wrapper input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 2;
+  border: none;
+  padding: 0;
+  background: none;
+}
+
+.file-input-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 14px;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--panel-muted);
+  color: var(--text-soft);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease, color 150ms ease, box-shadow 150ms ease;
+  user-select: none;
+  pointer-events: none;
+  line-height: 1.4;
+}
+
+.file-input-btn svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: opacity 150ms ease;
+}
+
+.file-input-btn .file-input-label {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-input-btn .file-input-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.file-input-wrapper:hover .file-input-btn {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.file-input-wrapper:hover .file-input-btn svg {
+  opacity: 1;
+}
+
+.file-input-wrapper.has-file .file-input-btn {
+  border-style: solid;
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* ─── Question List ──────────────────────────────────────────────────────── */
+.question-list {
+  display: grid;
+  gap: 8px;
+}
+
+/* ─── Question Editor Card ───────────────────────────────────────────────── */
+.question-editor-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel-muted);
+  overflow: hidden;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.question-editor-card:hover {
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-xs);
+}
+
+.question-editor-card::marker,
+.question-editor-card summary::-webkit-details-marker { display: none; }
+details.question-editor-card > summary::before,
+details.question-editor-card > summary::after { display: none; }
+
+.question-editor-card.dragging {
+  opacity: 0.45;
+  transform: scale(0.98);
+}
+
+.question-editor-card.drop-target {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--accent-glow);
+}
+
+.question-editor-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  cursor: pointer;
+  list-style: none;
+  padding: 10px 12px;
+  user-select: none;
+}
+
+.question-editor-header-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.question-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.question-preview-text {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.question-editor-card[open] .question-preview-text { display: none; }
+
+.question-editor-actions {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1;
+  box-shadow: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.icon-btn:hover {
+  border: none;
+  background: var(--panel-inset);
+  color: var(--accent);
+}
+
+.icon-btn.danger:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.question-editor-body {
+  padding: 8px 12px 10px;
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  min-height: 0;
+}
+
+.question-editor-body > * {
+  min-width: 0;
+}
+
+.question-editor-body label {
+  padding-top: 2px;
+}
+
+.section-divider {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 4px 0;
+}
+
+.question-image-controls {
+  display: grid;
+  gap: 10px;
+}
+
+.question-image-controls[hidden] { display: none; }
+
+.choices-grid { display: grid; gap: 8px; }
+
+.choice-editor-row {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+}
+
+.choice-editor-row span {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ─── Hint ───────────────────────────────────────────────────────────────── */
+.hint {
+  color: var(--text-muted);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--panel-inset);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 1px 5px;
+  color: var(--accent);
+}
+
+/* ─── Custom Context Menu ────────────────────────────────────────────────── */
+/* IMPORTANT: must override display:flex so [hidden] actually hides it */
+.custom-context-menu[hidden] { display: none !important; }
+
+.custom-context-menu {
+  position: fixed;
+  z-index: 500;
+  min-width: 140px;
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  padding: 3px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  animation: contextMenuIn 120ms ease;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes contextMenuIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.context-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  padding: 5px 8px;
+  font-size: 11.5px;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 100ms ease, color 100ms ease;
+}
+
+.question-group {
+  position: relative;
+  border-radius: 6px;
+  padding: 2px 4px;
+  outline: 1px solid transparent;
+  transition: outline-color 100ms ease, box-shadow 100ms ease, background 100ms ease;
+  cursor: pointer;
+  /* prevent overflow in 1-column mode */
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.context-item svg {
+  flex-shrink: 0;
+  opacity: 0.8;
+  width: 12px;
+  height: 12px;
+}
+
+.context-item:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.context-item.danger {
+  color: var(--danger);
+}
+
+.context-item.danger:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.context-divider {
+  height: 1px;
+  background: var(--line);
+  margin: 3px 0;
+}
+
+/* ─── Custom Select ──────────────────────────────────────────────────────── */
+:root {
+  --select-bg: #ffffff;
+  --select-border: var(--line);
+  --select-text: var(--text);
+  --select-hover-bg: var(--panel-muted);
+  --select-menu-bg: #ffffff;
+  --select-option-hover: #f0f1f4;
+}
+
+body[data-theme="dark"] {
+  --select-bg: #1a1e24;
+  --select-border: rgba(255, 255, 255, 0.06);
+  --select-text: #dbdee1;
+  --select-hover-bg: #1f2329;
+  --select-menu-bg: #1a1e24;
+  --select-option-hover: #22272e;
+}
+
+select.customized {
+  display: none !important;
+}
+
+.custom-select-wrapper {
+  position: relative;
+  width: 100%;
+  font-family: var(--font-ui);
+  font-size: 13.5px;
+  user-select: none;
+  margin-top: 5px;
+}
+
+.custom-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: var(--panel-inset);
+  color: var(--select-text);
+  border: 1px solid var(--select-border);
+  border-radius: var(--radius-md);
+  padding: 9px 12px;
+  cursor: pointer;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+  outline: none;
+}
+
+.custom-select-trigger:hover {
+  background: var(--panel-inset);
+}
+
+.custom-select-trigger:focus-visible,
+.custom-select-trigger.open {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.custom-select-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 8px;
+}
+
+.custom-select-icon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+  flex-shrink: 0;
+  transition: transform 150ms ease;
+}
+
+.custom-select-trigger.open .custom-select-icon {
+  transform: rotate(180deg);
+}
+
+.custom-select-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  background: var(--select-menu-bg);
+  border: 1px solid var(--select-border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  max-height: 280px;
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 150ms ease, transform 150ms ease, visibility 150ms ease;
+  padding: 4px 0;
+}
+
+.custom-select-menu.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.custom-select-menu::-webkit-scrollbar {
+  width: 10px;
+}
+.custom-select-menu::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 4px 0;
+}
+.custom-select-menu::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.4);
+  border-radius: 5px;
+  border: 3px solid var(--select-menu-bg);
+}
+.custom-select-menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 128, 128, 0.6);
+}
+
+.custom-select-option {
+  padding: 8px 12px;
+  margin: 0 4px;
+  border-radius: 4px;
+  color: var(--select-text);
+  cursor: pointer;
+  transition: background 100ms ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.custom-select-option:hover {
+  background: var(--select-option-hover);
+}
+
+.custom-select-option.selected {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+body[data-theme="dark"] .custom-select-option.selected {
+  background: rgba(29, 78, 216, 0.15);
+  color: #92b9ff;
+}
+
+/* Disabled State */
+.custom-select-wrapper.disabled {
+  cursor: not-allowed;
+}
+
+.custom-select-wrapper.disabled .custom-select-trigger {
+  opacity: 0.55;
+  pointer-events: none;
+  background: var(--select-hover-bg);
+  border-color: var(--line);
+}

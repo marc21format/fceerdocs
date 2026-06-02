@@ -1,0 +1,522 @@
+/* ─── Modals ─────────────────────────────────────────────────────────────── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(6,8,12,0.60);
+  backdrop-filter: blur(4px);
+  animation: backdropIn 160ms ease;
+}
+
+@keyframes backdropIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal-backdrop[hidden] { display: none; }
+
+.modal-card {
+  width: min(1120px, calc(100vw - 48px));
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--panel);
+  box-shadow: var(--shadow-xl);
+  animation: modalIn 180ms cubic-bezier(0.34, 1.20, 0.64, 1);
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.modal-header h2 {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.modal-subtitle {
+  color: var(--text-soft);
+  font-size: 12.5px;
+  margin-top: 3px;
+}
+
+/* ─── Export Issue Modal ─────────────────────────────────────────────────── */
+.export-issue-modal-card { width: min(460px, calc(100vw - 48px)); }
+.export-issue-modal-body { padding: 18px 20px; }
+.export-issue-modal-body p { color: var(--text); line-height: 1.5; font-size: 13.5px; }
+
+/* ─── Duplicate Save Modal ───────────────────────────────────────────────── */
+.duplicate-save-modal-card { width: min(980px, calc(100vw - 48px)); }
+
+.duplicate-modal-body {
+  display: grid;
+  gap: 14px;
+  padding: 16px 20px;
+  overflow: auto;
+  max-height: calc(100vh - 180px);
+}
+
+.duplicate-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.duplicate-modal-panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel-muted);
+  padding: 14px;
+  min-width: 0;
+}
+
+.duplicate-modal-panel h3 {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-soft);
+}
+
+.duplicate-meta {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 10px;
+  color: var(--text-soft);
+  font-size: 12px;
+}
+
+.duplicate-meta span { display: block; }
+.duplicate-stem { color: var(--text); line-height: 1.5; white-space: pre-wrap; font-size: 13.5px; }
+
+.duplicate-match-list { display: grid; gap: 8px; }
+
+.duplicate-match-item {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--panel-muted);
+  padding: 10px 14px;
+  color: var(--text-soft);
+  font-size: 12.5px;
+}
+
+.duplicate-match-item strong {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.duplicate-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px 18px;
+  border-top: 1px solid var(--line);
+}
+
+/* ─── Save Confirm Modal ─────────────────────────────────────────────────── */
+.save-confirm-modal-card { width: min(860px, calc(100vw - 48px)); }
+
+.save-confirm-modal-body {
+  display: grid;
+  gap: 14px;
+  padding: 16px 20px;
+  overflow: auto;
+  max-height: calc(100vh - 200px);
+}
+
+.save-confirm-details {
+  display: grid;
+  gap: 5px;
+  color: var(--text-soft);
+  font-size: 13px;
+}
+
+.save-confirm-details span { display: block; }
+
+.save-confirm-checkbox { align-self: end; }
+
+.save-confirm-checkline {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel-inset);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.save-confirm-checkline input {
+  width: auto;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.save-confirm-error {
+  min-height: 1.2em;
+  color: var(--danger);
+  font-size: 12.5px;
+}
+
+/* ─── Database Modal ─────────────────────────────────────────────────────── */
+.database-modal-layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: var(--db-sidebar-width, minmax(260px, 320px)) 4px minmax(0, 1fr);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.database-list-panel {
+  display: flex;
+  flex-direction: column;
+  border-right: none;
+  min-width: 0;
+  min-height: 0;
+  background: var(--panel-muted);
+  overflow: hidden;
+}
+
+.database-sidebar-resizer {
+  cursor: col-resize;
+  background: var(--line);
+  position: relative;
+  z-index: 2;
+  transition: background 150ms ease;
+}
+
+.database-sidebar-resizer::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 24px;
+  border-radius: 1px;
+  background: var(--text-soft);
+  opacity: 0.3;
+  transition: opacity 150ms ease;
+}
+
+.database-sidebar-resizer:hover::after {
+  opacity: 0.5;
+}
+
+body.modal-resize-active {
+  cursor: col-resize !important;
+  user-select: none;
+}
+
+body.modal-resize-active .database-modal-card,
+body.modal-resize-active iframe {
+  pointer-events: none;
+}
+
+.database-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.database-icon-btn {
+  width: 36px;
+  height: 34px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  position: relative;
+  box-shadow: none;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.database-icon-btn:hover,
+.database-icon-btn:focus-visible {
+  border: none;
+  background: var(--panel-inset);
+  color: var(--text);
+}
+
+.database-icon-btn svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.database-icon-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 8px);
+  transform: translate(-50%, 4px);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--text);
+  color: var(--panel);
+  transition: opacity 120ms ease, transform 120ms ease;
+  font-size: 11px;
+  font-weight: 500;
+  z-index: 9999;
+}
+
+.database-icon-btn:hover::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.database-filters {
+  display: grid;
+  grid-template-columns: minmax(300px, 2fr) repeat(3, minmax(120px, 0.85fr));
+  gap: 10px;
+  align-items: end;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--panel);
+  flex-shrink: 0;
+}
+
+.database-list-toolbar,
+.database-form-toolbar {
+  justify-content: flex-end;
+  padding-bottom: 2px;
+  position: relative;  /* ← dagdag */
+  z-index: 50;         /* ← dagdag */
+}
+.database-list-toolbar {
+  justify-content: flex-start;
+  padding: 6px 8px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--panel-muted);
+  border-bottom: 1px solid var(--line);
+}
+
+.database-form-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  align-items: center;
+  padding: 6px 8px;
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+  margin: 0 -16px;        /* ← para full-width kahit may padding ang parent */
+  padding: 6px 16px;
+}
+
+.database-question-list {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.database-question-list:empty::after,
+.database-question-list .db-empty {
+  display: block;
+  padding: 16px 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.database-question-item {
+  width: 100%;
+  display: grid;
+  gap: 3px;
+  padding: 9px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.database-question-item:hover,
+.database-question-item.active {
+  border-color: var(--line);
+  background: var(--panel);
+}
+
+.database-question-item.active {
+  border-color: rgba(29,78,216,0.20);
+  background: var(--accent-soft);
+}
+
+.database-question-item strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.database-question-item span {
+  color: var(--text-muted);
+  font-size: 11.5px;
+}
+
+.database-group-label {
+  padding: 8px 10px 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  background: var(--panel-inset);
+  border-radius: var(--radius-sm);
+  margin: 4px 6px 2px;
+  user-select: none;
+}
+
+.database-question-form {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  min-height: 0;
+  overflow: auto;
+  padding: 0 16px 16px;   /* ← tanggalin ang top padding, hawak na ng sticky toolbar */
+}
+
+
+.database-choice-list { display: grid; gap: 8px; }
+
+.database-choice-row {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+}
+
+.database-choice-row span {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ─── Database List Toolbar Spacer ──────────────────────────────────────── */
+.database-list-toolbar-spacer {
+  flex: 1;
+}
+
+.database-list-toolbar {
+  display: flex;
+  align-items: center;
+}
+
+/* Make the bulk import icon button visually distinct */
+#database-bulk-import-btn {
+  color: var(--accent);
+}
+
+#database-bulk-import-btn:hover,
+#database-bulk-import-btn:focus-visible {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+}
+
+/* ─── CSV Metadata Modal ─────────────────────────────────────────────────── */
+.csv-metadata-modal-card {
+  max-width: 520px;
+  width: 100%;
+  overflow: visible;
+}
+
+.csv-metadata-modal-body {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.csv-preview-info {
+  background: var(--panel-inset);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text-soft);
+  line-height: 1.5;
+}
+
+.csv-preview-info strong {
+  color: var(--text);
+  display: block;
+  margin-bottom: 2px;
+  font-size: 14px;
+}
+
+.csv-preview-info .csv-pill {
+  display: inline-block;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+  border-radius: var(--radius-pill);
+  padding: 1px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+#csv-metadata-submit svg {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+#csv-metadata-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Loading state for submit button */
+#csv-metadata-submit[data-loading="true"] {
+  opacity: 0.65;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+

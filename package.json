@@ -1,0 +1,14 @@
+{
+  "name": "test-builder-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "mongodb": "^6.21.0",
+    "puppeteer-core": "^25.1.0"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}

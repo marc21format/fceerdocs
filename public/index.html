@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Builder</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <nav class="settings-navbar">
+        <button class="nav-btn active" data-panel="header-footer">Header & Footer</button>
+        <button class="nav-btn" data-panel="exam-details">Exam Details</button>
+        <button class="nav-btn" data-panel="title-instructions">Title & Instructions</button>
+        <button class="nav-btn" data-panel="watermark">Watermark</button>
+        <button class="nav-btn" data-panel="questions">Questions</button>
+        
+        <div class="settings-navbar-actions">
+          <button id="undo-btn" class="toolbar-btn" title="Undo" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 7H14C17.3137 7 20 9.68629 20 13C20 16.3137 17.3137 19 14 19H4M4 7L8 3M4 7L8 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button id="redo-btn" class="toolbar-btn" title="Redo" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 7H10C6.68629 7 4 9.68629 4 13C4 16.3137 6.68629 19 10 19H20M20 7L16 3M20 7L16 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button id="database-questions-btn" class="toolbar-btn">Question Bank</button>
+          <button id="export-pdf-btn" class="toolbar-btn primary">
+            Export
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13 7L11.8845 4.76892C11.5634 4.1268 11.4029 3.80573 11.1634 3.57116C10.9516 3.36373 10.6963 3.20597 10.4161 3.10931C10.0992 3 9.74021 3 9.02229 3H5.2C4.0799 3 3.51984 3 3.09202 3.21799C2.71569 3.40973 2.40973 3.71569 2.21799 4.09202C2 4.51984 2 5.0799 2 6.2V7M2 7H17.2C18.8802 7 19.7202 7 20.362 7.32698C20.9265 7.6146 21.3854 8.07354 21.673 8.63803C22 9.27976 22 10.1198 22 11.8V16.2C22 17.8802 22 18.7202 21.673 19.362C21.3854 19.9265 20.9265 20.3854 20.362 20.673C19.7202 21 18.8802 21 17.2 21H6.8C5.11984 21 4.27976 21 3.63803 20.673C3.07354 20.3854 2.6146 19.9265 2.32698 19.362C2 18.7202 2 17.8802 2 16.2V7ZM9 14L12 17M12 17L15 14M12 17V11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </nav>
+
+      <main class="workspace">
+
+    <div id="duplicate-save-modal" class="modal-backdrop" hidden>
+      <section class="modal-card duplicate-save-modal-card" role="dialog" aria-modal="true" aria-labelledby="duplicate-save-modal-title">
+        <div class="modal-header">
+          <div>
+            <h2 id="duplicate-save-modal-title">Possible duplicate question found</h2>
+            <p id="duplicate-save-modal-subtitle" class="modal-subtitle">Review the incoming question and the matched database question before saving.</p>
+          </div>
+          <button id="duplicate-save-close" class="toolbar-btn small" type="button">Close</button>
+        </div>
+        <div class="duplicate-modal-body">
+          <div class="duplicate-modal-grid">
+            <section class="duplicate-modal-panel">
+              <h3>Incoming question</h3>
+              <div id="duplicate-incoming-meta" class="duplicate-meta"></div>
+              <p id="duplicate-incoming-stem" class="duplicate-stem"></p>
+            </section>
+            <section class="duplicate-modal-panel">
+              <h3>Matched database question</h3>
+              <div id="duplicate-existing-meta" class="duplicate-meta"></div>
+              <p id="duplicate-existing-stem" class="duplicate-stem"></p>
+            </section>
+          </div>
+          <div id="duplicate-match-list" class="duplicate-match-list"></div>
+        </div>
+        <div class="duplicate-modal-actions">
+          <button id="duplicate-save-cancel" class="toolbar-btn" type="button">Cancel</button>
+          <button id="duplicate-save-confirm" class="toolbar-btn primary" type="button">Save anyway</button>
+        </div>
+      </section>
+    </div>
+    <div id="save-confirm-modal" class="modal-backdrop" hidden>
+      <section class="modal-card save-confirm-modal-card" role="dialog" aria-modal="true" aria-labelledby="save-confirm-modal-title">
+        <div class="modal-header">
+          <div>
+            <h2 id="save-confirm-modal-title">Are you sure you want to save this question?</h2>
+            <p class="modal-subtitle">Review the details below, enter your name, then confirm.</p>
+          </div>
+          <button id="save-confirm-close" class="toolbar-btn small" type="button">Close</button>
+        </div>
+        <div class="save-confirm-modal-body">
+          <section class="duplicate-modal-panel">
+            <h3>Question details</h3>
+            <div id="save-confirm-details" class="save-confirm-details"></div>
+          </section>
+          <div class="two-col-grid">
+            <label>
+              Instructor name
+              <input id="save-confirm-name" type="text" placeholder="Enter your name" />
+            </label>
+            <label class="save-confirm-checkbox">
+              <span>&nbsp;</span>
+              <span class="save-confirm-checkline">
+                <input id="save-confirm-skip" type="checkbox" />
+                <span>Don’t ask again for the rest of this session</span>
+              </span>
+            </label>
+          </div>
+          <p id="save-confirm-error" class="save-confirm-error"></p>
+        </div>
+        <div class="duplicate-modal-actions">
+          <button id="save-confirm-cancel" class="toolbar-btn" type="button">Cancel</button>
+          <button id="save-confirm-submit" class="toolbar-btn primary" type="button">Confirm save</button>
+        </div>
+      </section>
+    </div>
+    <div id="export-issue-modal" class="modal-backdrop" hidden>
+      <section class="modal-card export-issue-modal-card" role="dialog" aria-modal="true" aria-labelledby="export-issue-modal-title">
+        <div class="modal-header">
+          <div>
+            <h2 id="export-issue-modal-title">Ayusin muna yung page</h2>
+            <p class="modal-subtitle">Hindi muna ie-export habang may content na tumatama sa footer.</p>
+          </div>
+          <button id="export-issue-close" class="toolbar-btn small" type="button">Close</button>
+        </div>
+        <div class="export-issue-modal-body">
+          <p id="export-issue-message"></p>
+        </div>
+      </section>
+    </div>
+        <section class="preview-area">
+          <div class="preview-container-relative">
+            <div id="page-preview" class="page-preview"></div>
+            <div class="zoom-controls">
+              <button id="zoom-out-btn" class="zoom-btn" title="Zoom Out">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+              <span id="zoom-label" class="zoom-label">100%</span>
+              <button id="zoom-in-btn" class="zoom-btn" title="Zoom In">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+              <button id="zoom-reset-btn" class="zoom-btn small" title="Reset Zoom">Reset</button>
+            </div>
+          </div>
+        </section>
+
+        <div class="sidebar-resizer" data-sidebar-resizer aria-hidden="true"></div>
+
+        <aside class="sidebar right-panel">
+          <!-- Header & Footer Panel -->
+          <div class="settings-card" data-panel="header-footer">
+            <h2>Header & Footer</h2>
+            <div class="panel-body">
+              <label>Header banner</label>
+              <div class="file-input-wrapper" id="header-image-wrapper">
+                <input id="header-image-input" type="file" accept="image/*" />
+                <div class="file-input-btn">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15M17 8L12 3M12 3L7 8M12 3V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <span class="file-input-label">Choose header image…</span>
+                  <span class="file-input-hint">PNG / JPG</span>
+                </div>
+              </div>
+              <label>Footer image</label>
+              <div class="file-input-wrapper" id="footer-image-wrapper">
+                <input id="footer-image-input" type="file" accept="image/*" />
+                <div class="file-input-btn">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15M17 8L12 3M12 3L7 8M12 3V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <span class="file-input-label">Choose footer image…</span>
+                  <span class="file-input-hint">PNG / JPG</span>
+                </div>
+              </div>
+              <!-- Footer controls intentionally minimal: image only (height/bottom removed) -->
+            </div>
+          </div>
+
+          <!-- Exam Details Panel -->
+          <div class="settings-card" data-panel="exam-details">
+            <h2>Exam Details</h2>
+            <div class="panel-body">
+              <label>
+                Subject
+                <select id="exam-subject-input">
+                    <option value="Math 1 (algebra)">Math 1 (algebra)</option>
+                    <option value="Math 2 (word problems)">Math 2 (word problems)</option>
+                    <option value="Math 3 (geometry)">Math 3 (geometry)</option>
+                    <option value="Math 4 (statistics)">Math 4 (statistics)</option>
+                    <option value="Biology">Biology</option>
+                    <option value="Physics">Physics</option>
+                    <option value="Chem">Chem</option>
+                    <option value="Earth and Space Science">Earth and Space Science</option>
+                    <option value="English Language Proficiency">English Language Proficiency</option>
+                    <option value="Kasanayan sa Wikang Filipino">Kasanayan sa Wikang Filipino</option>
+                    <option value="Reading Comprehension">Reading Comprehension</option>
+                </select>
+              </label>
+              <label>
+                Exam number
+                <input id="exam-number-input" type="number" min="1" max="5" step="1" />
+              </label>
+              <div class="two-col-grid">
+                <label>
+                  Exam type
+                  <select id="exam-type-input">
+                    <option value="practice test">Practice Test</option>
+                    <option value="mock test">Mock Test</option>
+                    <option value="test">Test</option>
+                  </select>
+                </label>
+                <div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Title & Instructions Panel -->
+          <div class="settings-card" data-panel="title-instructions">
+            <h2>Title & Instructions</h2>
+            <div class="panel-body">
+              <label class="field-label">Exam title</label>
+              <div class="stem-editor-wrap title-editor-wrap">
+                <div id="title-text-input" class="title-text-input" contenteditable="true" data-placeholder="Enter exam title..."></div>
+                <div class="stem-editor-toolbar passage-editor-toolbar title-editor-toolbar">
+                  <div class="passage-toolbar-left">
+                    <button type="button" class="passage-tool-btn" title="Bold" data-cmd="bold">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 4V20M9.5 4H15.5C17.7091 4 19.5 5.79086 19.5 8C19.5 10.2091 17.7091 12 15.5 12H9.5H16.5C18.7091 12 20.5 13.7909 20.5 16C20.5 18.2091 18.7091 20 16.5 20H9.5M9.5 4V20M9.5 4H4M9.5 20H4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                    <button type="button" class="passage-tool-btn" title="Italic" data-cmd="italic">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 4H10M14 20H5M15 4L9 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                    <button type="button" class="passage-tool-btn" title="Underline" data-cmd="underline">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 4V11C18 14.3137 15.3137 17 12 17C8.68629 17 6 14.3137 6 11V4M4 21H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="passage-toolbar-center">
+                    <button class="passage-tool-btn title-fontsize-minus" type="button" title="Decrease font size">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                    <span class="passage-fontsize-display title-fontsize-display">13</span>
+                    <button class="passage-tool-btn title-fontsize-plus" type="button" title="Increase font size">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="passage-toolbar-right">
+                    <button class="passage-tool-btn title-align-btn" data-align="left" type="button" title="Left align">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 10H3M20 6H3M20 14H3M16 18H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                    <button class="passage-tool-btn title-align-btn" data-align="center" type="button" title="Center align">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 10H6M21 6H3M21 14H3M18 18H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                    <button class="passage-tool-btn title-align-btn" data-align="right" type="button" title="Right align">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21 10H8M21 6H4M21 14H4M21 18H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                    <button class="passage-tool-btn title-align-btn active" data-align="center" type="button" title="Center align" style="display:none"></button>
+                  </div>
+                </div>
+              </div>
+              <label class="field-label">Instructions</label>
+              <div class="stem-editor-wrap instruction-editor-wrap">
+                <div id="instruction-text-input" class="instruction-text-input" contenteditable="true" data-placeholder="Enter instructions..."></div>
+                <div class="stem-editor-toolbar passage-editor-toolbar instruction-editor-toolbar">
+                  <div class="passage-toolbar-left">
+                    <button type="button" class="passage-tool-btn" title="Bold" data-cmd="bold">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 4V20M9.5 4H15.5C17.7091 4 19.5 5.79086 19.5 8C19.5 10.2091 17.7091 12 15.5 12H9.5H16.5C18.7091 12 20.5 13.7909 20.5 16C20.5 18.2091 18.7091 20 16.5 20H9.5M9.5 4V20M9.5 4H4M9.5 20H4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                    <button type="button" class="passage-tool-btn" title="Italic" data-cmd="italic">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 4H10M14 20H5M15 4L9 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                    <button type="button" class="passage-tool-btn" title="Underline" data-cmd="underline">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 4V11C18 14.3137 15.3137 17 12 17C8.68629 17 6 14.3137 6 11V4M4 21H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="passage-toolbar-center">
+                    <button class="passage-tool-btn instruction-fontsize-minus" type="button" title="Decrease font size">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                    <span class="passage-fontsize-display instruction-fontsize-display">11</span>
+                    <button class="passage-tool-btn instruction-fontsize-plus" type="button" title="Increase font size">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="passage-toolbar-right">
+                    <button class="passage-tool-btn instruction-align-btn" data-align="left" type="button" title="Left align">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 10H3M20 6H3M20 14H3M16 18H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                    <button class="passage-tool-btn instruction-align-btn" data-align="center" type="button" title="Center align">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 10H6M21 6H3M21 14H3M18 18H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                    <button class="passage-tool-btn instruction-align-btn" data-align="right" type="button" title="Right align">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21 10H8M21 6H4M21 14H4M21 18H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                    <button class="passage-tool-btn instruction-align-btn active" data-align="center" type="button" title="Center align" style="display:none"></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Watermark Panel -->
+          <div class="settings-card" data-panel="watermark">
+            <h2>Watermark</h2>
+            <div class="panel-body">
+              <label>Watermark image</label>
+              <div class="file-input-wrapper" id="watermark-image-wrapper">
+                <input id="watermark-image-input" type="file" accept="image/*" />
+                <div class="file-input-btn">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15M17 8L12 3M12 3L7 8M12 3V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <span class="file-input-label">Choose watermark image…</span>
+                  <span class="file-input-hint">PNG / JPG</span>
+                </div>
+              </div>
+              <div class="two-col-grid">
+                <label>
+                  Opacity
+                  <input id="watermark-opacity-input" type="number" min="0" max="1" step="0.01" />
+                </label>
+                <label>
+                  Size
+                  <input id="watermark-scale-input" type="number" min="0" step="0.1" />
+                </label>
+              </div>
+              <div class="two-col-grid">
+                <label>
+                  Darkness
+                  <input id="watermark-darkness-input" type="number" min="0" step="0.1" />
+                </label>
+                <label>
+                  Contrast
+                  <input id="watermark-contrast-input" type="number" min="0" step="0.1" />
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Questions Panel -->
+          <div class="settings-card" data-panel="questions">
+            <div class="section-heading">
+              <h2>Questions</h2>
+              <div class="toolbar-actions">
+                <button id="add-question-btn" class="toolbar-btn small">Add Question</button>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div class="two-col-grid">
+                <label>
+                  Font
+                  <select id="global-font-family"></select>
+                </label>
+                <label>
+                  Question font size
+                  <input id="question-font-size-input" type="number" min="6" max="32" step="0.1" />
+                </label>
+              </div>
+              <label>
+                Layout
+                <select id="body-layout-mode">
+                  <option value="two-column-compact">Two Column</option>
+                  <option value="single-column">Single Column</option>
+                </select>
+              </label>
+              <div class="two-col-grid">
+                <label>
+                  Question gap (px)
+                  <input id="question-gap-input" type="number" min="0" max="32" step="1" />
+                </label>
+                <label id="column-gap-field">
+                  Column gap (px)
+                  <input id="column-gap-input" type="number" min="0" max="120" step="1" />
+                </label>
+                <label>
+                  Left margin
+                  <input id="page-margin-left-input" type="number" min="0" step="0.1" />
+                </label>
+                <label>
+                  Right margin
+                  <input id="page-margin-right-input" type="number" min="0" step="0.1" />
+                </label>
+              </div>
+              <p id="question-gap-scope-label" class="hint">Applies to all pages and columns.</p>
+
+              <div class="panel-divider"></div>
+
+              <div class="hint-inline">
+                <button
+                  type="button"
+                  class="hint-icon-btn"
+                  aria-describedby="question-inline-hint"
+                  aria-label="Inline label help"
+                >
+                  <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <span id="question-inline-hint" class="hint-popover" role="tooltip">
+                  Use <code>[[word::A]]</code> for inline labels and <code>%% x^2 + \frac{1}{2} %%</code> for math.
+                </span>
+              </div>
+
+              <div id="question-list" class="question-list"></div>
+            </div>
+          </div>
+        </aside>
+      </main>
+      </div>
+
+    <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+      <defs>
+        <symbol id="ui-icon-x-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </symbol>
+        <symbol id="ui-icon-refresh-ccw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+        </symbol>
+        <symbol id="ui-icon-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M5 12h14"/>
+        </symbol>
+      </defs>
+    </svg>
+
+    <div id="database-modal" class="modal-backdrop" hidden>
+      <section class="modal-card database-modal-card" role="dialog" aria-modal="true" aria-labelledby="database-modal-title">
+        <div class="modal-header">
+          <div>
+            <h2 id="database-modal-title">Question Bank</h2>
+            <p id="database-modal-status" class="modal-subtitle">Saved questions</p>
+          </div>
+          <div class="database-header-actions">
+            <button id="database-modal-close" class="toolbar-btn small" type="button" aria-label="Close">
+              <svg viewBox="0 0 24 24" width="16" height="16"><use href="#ui-icon-x-close" /></svg>
+              Close
+            </button>
+          </div>
+        </div>
+        <div class="database-filters">
+          <input id="database-search-input" type="search" placeholder="Search questions" />
+          <label>
+            Subject
+            <select id="database-filter-subject"></select>
+          </label>
+          <label>
+            Exam type
+            <select id="database-filter-exam-type"></select>
+          </label>
+          <label>
+            Topic
+            <select id="database-filter-topic"></select>
+          </label>
+        </div>
+        <div class="database-modal-layout">
+          <aside class="database-list-panel">
+            <div class="database-list-toolbar">
+              <button id="database-refresh-btn" class="toolbar-btn small database-icon-btn" type="button" aria-label="Refresh" data-tooltip="Refresh">
+                <svg viewBox="0 0 24 24" width="15" height="15"><use href="#ui-icon-refresh-ccw" /></svg>
+              </button>
+              <button id="database-new-btn" class="toolbar-btn small database-icon-btn" type="button" aria-label="Add" data-tooltip="Add">
+                <svg viewBox="0 0 24 24" width="15" height="15"><use href="#ui-icon-plus" /></svg>
+              </button>
+              <div class="database-list-toolbar-spacer"></div>
+              <button id="database-bulk-import-btn" class="toolbar-btn small database-icon-btn" type="button" aria-label="Bulk Import CSV" data-tooltip="Bulk Import CSV">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20.5 7.27783L12 12.0001M12 12.0001L3.49997 7.27783M12 12.0001L12 21.5001M14 20.889L12.777 21.5684C12.4934 21.726 12.3516 21.8047 12.2015 21.8356C12.0685 21.863 11.9315 21.863 11.7986 21.8356C11.6484 21.8047 11.5066 21.726 11.223 21.5684L3.82297 17.4573C3.52346 17.2909 3.37368 17.2077 3.26463 17.0893C3.16816 16.9847 3.09515 16.8606 3.05048 16.7254C3 16.5726 3 16.4013 3 16.0586V7.94153C3 7.59889 3 7.42757 3.05048 7.27477C3.09515 7.13959 3.16816 7.01551 3.26463 6.91082C3.37368 6.79248 3.52345 6.70928 3.82297 6.54288L11.223 2.43177C11.5066 2.27421 11.6484 2.19543 11.7986 2.16454C11.9315 2.13721 12.0685 2.13721 12.2015 2.16454C12.3516 2.19543 12.4934 2.27421 12.777 2.43177L20.177 6.54288C20.4766 6.70928 20.6263 6.79248 20.7354 6.91082C20.8318 7.01551 20.9049 7.13959 20.9495 7.27477C21 7.42757 21 7.59889 21 7.94153L21 12.5001M7.5 4.50008L16.5 9.50008M19 21.0001V15.0001M16 18.0001H22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <input id="csv-file-input" type="file" accept=".csv" style="display:none" />
+            </div>
+            <div id="database-question-list" class="database-question-list"></div>
+          </aside>
+          <div class="database-sidebar-resizer" id="database-sidebar-resizer"></div>
+          <form id="database-question-form" class="database-question-form">
+            <div class="database-form-toolbar">
+              <button id="database-use-btn" class="toolbar-btn small database-icon-btn" type="button" aria-label="Add to Builder" data-tooltip="Add to Builder">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M20 10.5V6.8C20 5.11984 20 4.27976 19.673 3.63803C19.3854 3.07354 18.9265 2.6146 18.362 2.32698C17.7202 2 16.8802 2 15.2 2H8.8C7.11984 2 6.27976 2 5.63803 2.32698C5.07354 2.6146 4.6146 3.07354 4.32698 3.63803C4 4.27976 4 5.11984 4 6.8V17.2C4 18.8802 4 19.7202 4.32698 20.362C4.6146 20.9265 5.07354 21.3854 5.63803 21.673C6.27976 22 7.11984 22 8.8 22H12M18 21V15M15 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <button id="database-edit-btn" class="toolbar-btn small database-icon-btn" type="button" aria-label="Edit" data-tooltip="Edit">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M11 3.99998H6.8C5.11984 3.99998 4.27976 3.99998 3.63803 4.32696C3.07354 4.61458 2.6146 5.07353 2.32698 5.63801C2 6.27975 2 7.11983 2 8.79998V17.2C2 18.8801 2 19.7202 2.32698 20.362C2.6146 20.9264 3.07354 21.3854 3.63803 21.673C4.27976 22 5.11984 22 6.8 22H15.2C16.8802 22 17.7202 22 18.362 21.673C18.9265 21.3854 19.3854 20.9264 19.673 20.362C20 19.7202 20 18.8801 20 17.2V13M7.99997 16H9.67452C10.1637 16 10.4083 16 10.6385 15.9447C10.8425 15.8957 11.0376 15.8149 11.2166 15.7053C11.4184 15.5816 11.5914 15.4086 11.9373 15.0627L21.5 5.49998C22.3284 4.67156 22.3284 3.32841 21.5 2.49998C20.6716 1.67156 19.3284 1.67155 18.5 2.49998L8.93723 12.0627C8.59133 12.4086 8.41838 12.5816 8.29469 12.7834C8.18504 12.9624 8.10423 13.1574 8.05523 13.3615C7.99997 13.5917 7.99997 13.8363 7.99997 14.3255V16Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <button id="database-delete-btn" class="toolbar-btn small database-icon-btn" type="button" aria-label="Delete" data-tooltip="Delete">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 3H15M3 6H21M19 6L18.2987 16.5193C18.1935 18.0975 18.1409 18.8867 17.8 19.485C17.4999 20.0118 17.0472 20.4353 16.5017 20.6997C15.882 21 15.0911 21 13.5093 21H10.4907C8.90891 21 8.11803 21 7.49834 20.6997C6.95276 20.4353 6.50009 20.0118 6.19998 19.485C5.85911 18.8867 5.8065 18.0975 5.70129 16.5193L5 6M10 10.5V15.5M14 10.5V15.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <button id="database-save-btn" class="toolbar-btn small database-icon-btn" type="submit" aria-label="Save" data-tooltip="Save">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M15 8H8.6C8.03995 8 7.75992 8 7.54601 7.89101C7.35785 7.79513 7.20487 7.64215 7.10899 7.45399C7 7.24008 7 6.96005 7 6.4V3M17 21V14.6C17 14.0399 17 13.7599 16.891 13.546C16.7951 13.3578 16.6422 13.2049 16.454 13.109C16.2401 13 15.9601 13 15.4 13H8.6C8.03995 13 7.75992 13 7.54601 13.109C7.35785 13.2049 7.20487 13.3578 7.10899 13.546C7 13.7599 7 14.0399 7 14.6V21M21 9.32548V16.2C21 17.8802 21 18.7202 20.673 19.362C20.3854 19.9265 19.9265 20.3854 19.362 20.673C18.7202 21 17.8802 21 16.2 21H7.8C6.11984 21 5.27976 21 4.63803 20.673C4.07354 20.3854 3.6146 19.9265 3.32698 19.362C3 18.7202 3 17.8802 3 16.2V7.8C3 6.11984 3 5.27976 3.32698 4.63803C3.6146 4.07354 4.07354 3.6146 4.63803 3.32698C5.27976 3 6.11984 3 7.8 3H14.6745C15.1637 3 15.4083 3 15.6385 3.05526C15.8425 3.10425 16.0376 3.18506 16.2166 3.29472C16.4184 3.4184 16.5914 3.5816 16.9373 3.93726L20.0627 7.06274C20.4086 7.40865 20.5816 7.5816 20.7053 7.78343C20.8149 7.96237 20.8957 8.15746 20.9447 8.36154C21 8.59171 21 8.8363 21 9.32548Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+            <input id="database-question-id" type="hidden" />
+            <div class="two-col-grid">
+              <label>
+                Subject
+                <select id="database-question-subject"></select>
+              </label>
+              <label>
+                Topic
+                <input id="database-question-topic" type="text" />
+              </label>
+            </div>
+            <div class="two-col-grid">
+              <label>
+                Source exam type
+                <select id="database-source-exam-type"></select>
+              </label>
+              <label>
+                Source exam number
+                <input id="database-source-exam-number" type="number" min="1" step="1" />
+              </label>
+            </div>
+            <div class="two-col-grid">
+              <label>
+                Saved by / Instructor
+                <input id="database-saved-by" type="text" placeholder="Enter instructor name" />
+              </label>
+              <label>
+                Saved at
+                <input id="database-saved-at" type="text" readonly />
+              </label>
+            </div>
+            <label>
+              Stem
+              <textarea id="database-question-stem" rows="3"></textarea>
+            </label>
+            <div id="database-choice-list" class="database-choice-list"></div>
+            <div class="two-col-grid">
+              <label>
+                Correct answer
+                <select id="database-question-correct"></select>
+              </label>
+            </div>
+            <label>
+              Explanation
+              <textarea id="database-question-explanation" rows="3"></textarea>
+            </label>
+          </form>
+        </div>
+      </section>
+    </div>
+
+    <template id="question-editor-template">
+        <details class="question-editor-card" draggable="true">
+          <summary class="question-editor-header">
+            <div class="question-editor-header-content">
+              <strong class="question-title"></strong>
+              <p class="question-preview-text"></p>
+            </div>
+            <div class="question-editor-actions">
+              <button class="toolbar-btn small icon-btn save-question-btn" type="button" title="Save" aria-label="Save question">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 16.2422C2.79401 15.435 2 14.0602 2 12.5C2 10.1564 3.79151 8.23129 6.07974 8.01937C6.54781 5.17213 9.02024 3 12 3C14.9798 3 17.4522 5.17213 17.9203 8.01937C20.2085 8.23129 22 10.1564 22 12.5C22 14.0602 21.206 15.435 20 16.2422M8 16L12 12M12 12L16 16M12 12V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <button class="toolbar-btn small icon-btn duplicate-question-btn" type="button" title="Duplicate" aria-label="Duplicate question">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 15C4.06812 15 3.60218 15 3.23463 14.8478C2.74458 14.6448 2.35523 14.2554 2.15224 13.7654C2 13.3978 2 12.9319 2 12V5.2C2 4.0799 2 3.51984 2.21799 3.09202C2.40973 2.71569 2.71569 2.40973 3.09202 2.21799C3.51984 2 4.0799 2 5.2 2H12C12.9319 2 13.3978 2 13.7654 2.15224C14.2554 2.35523 14.6448 2.74458 14.8478 3.23463C15 3.60218 15 4.06812 15 5M12.2 22H18.8C19.9201 22 20.4802 22 20.908 21.782C21.2843 21.5903 21.5903 21.2843 21.782 20.908C22 20.4802 22 19.9201 22 18.8V12.2C22 11.0799 22 10.5198 21.782 10.092C21.5903 9.71569 21.2843 9.40973 20.908 9.21799C20.4802 9 19.9201 9 18.8 9H12.2C11.0799 9 10.5198 9 10.092 9.21799C9.71569 9.40973 9.40973 9.71569 9.21799 10.092C9 10.5198 9 11.0799 9 12.2V18.8C9 19.9201 9 20.4802 9.21799 20.908C9.40973 21.2843 9.71569 21.5903 10.092 21.782C10.5198 22 11.0799 22 12.2 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <button class="toolbar-btn small icon-btn delete-question-btn danger" type="button" title="Delete" aria-label="Delete question">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M16 6V5.2C16 4.0799 16 3.51984 15.782 3.09202C15.5903 2.71569 15.2843 2.40973 14.908 2.21799C14.4802 2 13.9201 2 12.8 2H11.2C10.0799 2 9.51984 2 9.09202 2.21799C8.71569 2.40973 8.40973 2.71569 8.21799 3.09202C8 3.51984 8 4.0799 8 5.2V6M10 11.5V16.5M14 11.5V16.5M3 6H21M19 6V17.2C19 18.8802 19 19.7202 18.673 20.362C18.3854 20.9265 17.9265 21.3854 17.362 21.673C16.7202 22 15.8802 22 14.2 22H9.8C8.11984 22 7.27976 22 6.63803 21.673C6.07354 21.3854 5.6146 20.9265 5.32698 20.362C5 19.7202 5 18.8802 5 17.2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </summary>
+        <div class="question-editor-body">
+          <label>
+            Topic
+            <input class="question-topic-input" type="text" />
+          </label>
+          <div class="stem-editor-wrap">
+            <div class="question-stem-input" contenteditable="true"></div>
+            <div class="stem-editor-toolbar">
+              <div class="stem-format-btns">
+                <button type="button" class="format-btn stem-format-btn" title="Bold" data-cmd="bold">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 4V20M9.5 4H15.5C17.7091 4 19.5 5.79086 19.5 8C19.5 10.2091 17.7091 12 15.5 12H9.5H16.5C18.7091 12 20.5 13.7909 20.5 16C20.5 18.2091 18.7091 20 16.5 20H9.5M9.5 4V20M9.5 4H4M9.5 20H4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <button type="button" class="format-btn stem-format-btn" title="Italic" data-cmd="italic">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 4H10M14 20H5M15 4L9 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <button type="button" class="format-btn stem-format-btn" title="Underline" data-cmd="underline">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 4V11C18 14.3137 15.3137 17 12 17C8.68629 17 6 14.3137 6 11V4M4 21H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <label>
+            Choice layout
+            <select class="question-choice-layout-input">
+              <option value="auto">Auto</option>
+              <option value="1">1 per row</option>
+              <option value="2">2 per row</option>
+              <option value="4">4 per row</option>
+            </select>
+          </label>
+          <div class="choices-grid"></div>
+          <label>
+            Correct answer
+            <select class="question-correct-answer-input"></select>
+          </label>
+          <label>
+            Explanation
+            <textarea class="question-explanation-input" rows="3"></textarea>
+          </label>
+          <hr class="section-divider" />
+          <label>Question image</label>
+          <div class="file-input-wrapper question-image-wrapper">
+            <input class="question-image-input" type="file" accept="image/*" />
+            <div class="file-input-btn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15M17 8L12 3M12 3L7 8M12 3V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="file-input-label">Choose image…</span>
+              <span class="file-input-hint">PNG / JPG</span>
+            </div>
+          </div>
+          <button class="toolbar-btn small delete-question-image-btn" type="button" hidden>Delete Image</button>
+          <div class="question-image-controls">
+            <div class="two-col-grid">
+              <label>
+                Image position
+                <select class="question-image-position-input">
+                  <option value="top">Top</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                  <option value="bottom">Bottom</option>
+                  <option value="bottom-left">Bottom Left</option>
+                  <option value="bottom-right">Bottom Right</option>
+                </select>
+              </label>
+              <label>
+                Image width
+                <input class="question-image-width-input" type="number" min="0" step="0.1" />
+              </label>
+            </div>
+            <label>
+              Image notes
+              <input class="question-image-note-input" type="text" />
+            </label>
+            <div class="two-col-grid">
+              <label>
+                Image X
+                <input class="question-image-x-input" type="number" min="0" step="0.1" />
+              </label>
+              <label>
+                Image Y
+                <input class="question-image-y-input" type="number" min="0" step="0.1" />
+              </label>
+            </div>
+          </div>
+          <hr class="section-divider" />
+          <label>Question passage</label>
+          <div class="stem-editor-wrap">
+            <div class="question-passage-input" contenteditable="true" data-placeholder="Enter passage text..."></div>
+            <div class="stem-editor-toolbar passage-editor-toolbar">
+              <div class="passage-toolbar-left">
+                <button type="button" class="passage-tool-btn" title="Bold" data-cmd="bold">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 4V20M9.5 4H15.5C17.7091 4 19.5 5.79086 19.5 8C19.5 10.2091 17.7091 12 15.5 12H9.5H16.5C18.7091 12 20.5 13.7909 20.5 16C20.5 18.2091 18.7091 20 16.5 20H9.5M9.5 4V20M9.5 4H4M9.5 20H4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <button type="button" class="passage-tool-btn" title="Italic" data-cmd="italic">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 4H10M14 20H5M15 4L9 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <button type="button" class="passage-tool-btn" title="Underline" data-cmd="underline">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 4V11C18 14.3137 15.3137 17 12 17C8.68629 17 6 14.3137 6 11V4M4 21H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="passage-toolbar-center">
+                <button class="passage-tool-btn passage-fontsize-minus-btn" type="button" title="Decrease font size">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <span class="passage-fontsize-display">12</span>
+                <button class="passage-tool-btn passage-fontsize-plus-btn" type="button" title="Increase font size">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="passage-toolbar-right">
+                <button class="passage-tool-btn passage-align-btn" data-align="left" type="button" title="Left align">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 10H3M20 6H3M20 14H3M16 18H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <button class="passage-tool-btn passage-align-btn" data-align="center" type="button" title="Center align">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 10H6M21 6H3M21 14H3M18 18H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <button class="passage-tool-btn passage-align-btn" data-align="right" type="button" title="Right align">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 10H8M21 6H4M21 14H4M21 18H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <button class="passage-tool-btn passage-align-btn" data-align="justify" type="button" title="Justify">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 6H21M3 10H21M3 14H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="question-passage-controls">
+            <div class="two-col-grid">
+              <label>
+                Passage position
+                <select class="question-passage-position-input">
+                  <option value="top">Top</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                  <option value="bottom">Bottom</option>
+                  <option value="bottom-left">Bottom Left</option>
+                  <option value="bottom-right">Bottom Right</option>
+                </select>
+              </label>
+              <label>
+                Passage note
+                <input class="question-passage-note-input" type="text" />
+              </label>
+            </div>
+          </div>
+        </div>
+      </details>
+    </template>
+
+    <!-- CSV Metadata Modal -->
+    <div id="csv-metadata-modal" class="modal-backdrop" hidden>
+      <section class="modal-card csv-metadata-modal-card" role="dialog" aria-modal="true" aria-labelledby="csv-metadata-modal-title">
+        <div class="modal-header">
+          <div>
+            <h2 id="csv-metadata-modal-title">Bulk Import from CSV</h2>
+            <p id="csv-metadata-modal-subtitle" class="modal-subtitle">Fill in the details below. All imported questions will share these metadata fields.</p>
+          </div>
+          <button id="csv-metadata-close" class="toolbar-btn small" type="button">Close</button>
+        </div>
+        <div class="csv-metadata-modal-body">
+          <div id="csv-preview-info" class="csv-preview-info"></div>
+          <div class="two-col-grid">
+            <label>
+              Subject
+              <select id="csv-subject-input">
+                <option value="Math 1 (algebra)">Math 1 (algebra)</option>
+                <option value="Math 2 (word problems)">Math 2 (word problems)</option>
+                <option value="Math 3 (geometry)">Math 3 (geometry)</option>
+                <option value="Math 4 (statistics)">Math 4 (statistics)</option>
+                <option value="Biology">Biology</option>
+                <option value="Physics">Physics</option>
+                <option value="Chem">Chem</option>
+                <option value="Earth and Space Science">Earth and Space Science</option>
+                <option value="English Language Proficiency">English Language Proficiency</option>
+                <option value="Kasanayan sa Wikang Filipino">Kasanayan sa Wikang Filipino</option>
+                <option value="Reading Comprehension">Reading Comprehension</option>
+              </select>
+            </label>
+            <label>
+              Exam type
+              <select id="csv-exam-type-input">
+                <option value="practice test">Practice Test</option>
+                <option value="mock test">Mock Test</option>
+                <option value="test">Test</option>
+              </select>
+            </label>
+          </div>
+          <div class="two-col-grid">
+            <label>
+              Exam number
+              <input id="csv-exam-number-input" type="number" min="1" max="99" step="1" value="1" />
+            </label>
+            <label>
+              Your name (Saved by)
+              <input id="csv-saved-by-input" type="text" placeholder="Enter your name" />
+            </label>
+          </div>
+          <p id="csv-metadata-error" class="save-confirm-error"></p>
+        </div>
+        <div class="duplicate-modal-actions">
+          <button id="csv-metadata-cancel" class="toolbar-btn" type="button">Cancel</button>
+          <button id="csv-metadata-submit" class="toolbar-btn primary" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:4px">
+              <path d="M20.5 7.27783L12 12.0001M12 12.0001L3.49997 7.27783M12 12.0001L12 21.5001M14 20.889L12.777 21.5684C12.4934 21.726 12.3516 21.8047 12.2015 21.8356C12.0685 21.863 11.9315 21.863 11.7986 21.8356C11.6484 21.8047 11.5066 21.726 11.223 21.5684L3.82297 17.4573C3.52346 17.2909 3.37368 17.2077 3.26463 17.0893C3.16816 16.9847 3.09515 16.8606 3.05048 16.7254C3 16.5726 3 16.4013 3 16.0586V7.94153C3 7.59889 3 7.42757 3.05048 7.27477C3.09515 7.13959 3.16816 7.01551 3.26463 6.91082C3.37368 6.79248 3.52345 6.70928 3.82297 6.54288L11.223 2.43177C11.5066 2.27421 11.6484 2.19543 11.7986 2.16454C11.9315 2.13721 12.0685 2.13721 12.2015 2.16454C12.3516 2.19543 12.4934 2.27421 12.777 2.43177L20.177 6.54288C20.4766 6.70928 20.6263 6.79248 20.7354 6.91082C20.8318 7.01551 20.9049 7.13959 20.9495 7.27477C21 7.42757 21 7.59889 21 7.94153L21 12.5001M7.5 4.50008L16.5 9.50008M19 21.0001V15.0001M16 18.0001H22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Save to Database
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <div id="custom-context-menu" class="custom-context-menu" hidden>
+      <button class="context-item" data-action="edit">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z"/></svg>
+        Edit Inline
+      </button>
+      <button class="context-item" data-action="go-to-editor">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Go to Editor
+      </button>
+      <div class="context-divider"></div>
+      <button class="context-item danger" data-action="delete">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+        Delete Question
+      </button>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+    <button id="theme-toggle-btn" class="theme-fab" aria-label="Toggle Theme">
+      <svg class="icon-sun" width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2V4M12 20V22M4 12H2M6.31412 6.31412L4.8999 4.8999M17.6859 6.31412L19.1001 4.8999M6.31412 17.69L4.8999 19.1042M17.6859 17.69L19.1001 19.1042M22 12H20M17 12C17 14.7614 14.7614 17 12 17C9.23858 17 7 14.7614 7 12C7 9.23858 9.23858 7 12 7C14.7614 7 17 9.23858 17 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <svg class="icon-moon" width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M22 15.8442C20.6866 16.4382 19.2286 16.7688 17.6935 16.7688C11.9153 16.7688 7.23116 12.0847 7.23116 6.30654C7.23116 4.77135 7.5618 3.3134 8.15577 2C4.52576 3.64163 2 7.2947 2 11.5377C2 17.3159 6.68414 22 12.4623 22C16.7053 22 20.3584 19.4742 22 15.8442Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </body>
+  </html>
