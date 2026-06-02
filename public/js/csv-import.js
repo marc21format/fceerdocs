@@ -97,10 +97,6 @@ export function initCsvImport(elements, { fetchDatabaseQuestions, setDatabaseSta
       const choices = row.choices.map((text) => ({ id: crypto.randomUUID(), text: text || "" }));
       return {
         id: crypto.randomUUID(),
-<<<<<<< HEAD
-=======
-        number: index + 1,
->>>>>>> c627fc6ad4062d8ea5ee1a4225406d4864ef3350
         order: index,
         subject,
         sourceSubject: subject,
@@ -114,19 +110,7 @@ export function initCsvImport(elements, { fetchDatabaseQuestions, setDatabaseSta
         choices,
         correctChoiceId: choices[0]?.id || "",
         explanation: "",
-<<<<<<< HEAD
         topic: ""
-=======
-        topic: "",
-        image: { dataUrl: "", width: 0, height: 0 },
-        imagePosition: "top",
-        imageWidth: 150,
-        imageBox: { x: 0, y: 0, width: 150, height: 120 },
-        passage: "",
-        passageNote: "",
-        passagePosition: "top",
-        passageFontSize: 12
->>>>>>> c627fc6ad4062d8ea5ee1a4225406d4864ef3350
       };
     });
 

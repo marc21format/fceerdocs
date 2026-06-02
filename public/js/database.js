@@ -438,7 +438,6 @@ export async function saveDatabaseFormQuestion() {
   };
   delete payload.choiceLayout;
   delete payload.sourceExamItemsCount;
-<<<<<<< HEAD
   delete payload.collapsed;
   delete payload.image;
   delete payload.imagePosition;
@@ -446,8 +445,6 @@ export async function saveDatabaseFormQuestion() {
   delete payload.imageBox;
   delete payload.spacingMode;
   delete payload.number;
-=======
->>>>>>> c627fc6ad4062d8ea5ee1a4225406d4864ef3350
   const result = exists ? await putQuestion(question.id, payload) : await postQuestion(payload);
   const saved = normalizeQuestionRecord(result.question, exists ? uiState.databaseQuestions.findIndex((item) => item.id === question.id) : uiState.databaseQuestions.length);
   const index = uiState.databaseQuestions.findIndex((item) => String(item.id) === String(saved.id));

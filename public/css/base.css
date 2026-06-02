@@ -89,7 +89,7 @@ body[data-theme="dark"] {
   --shadow-md:    0 4px 16px rgba(0,0,0,0.50), 0 1px 4px rgba(0,0,0,0.30);
   --shadow-lg:    0 12px 40px rgba(0,0,0,0.60), 0 2px 8px rgba(0,0,0,0.35);
   --shadow-xl:    0 24px 64px rgba(0,0,0,0.70), 0 4px 12px rgba(0,0,0,0.40);
-  --toolbar-bg:   rgba(12,14,18,0.90);
+  --toolbar-bg:   #12151a;
   --preview-bg:   #070809;
 }
 
