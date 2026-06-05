@@ -8,7 +8,7 @@
   --bg:           #f0f1f4;
   --panel:        #ffffff;
   --panel-muted:  #f7f8fa;
-  --panel-inset:  #eff0f3;
+  --panel-inset:  #ffffff;
   --glass:        rgba(255,255,255,0.72);
 
   /* Lines */
@@ -70,7 +70,7 @@ body[data-theme="dark"] {
   --bg:           #0a0c0f;
   --panel:        #12151a;
   --panel-muted:  #0f1216;
-  --panel-inset:  #0c0e12;
+  --panel-inset:  #1a1e24;
   --glass:        rgba(18,21,26,0.82);
   --line:         rgba(255,255,255,0.07);
   --line-strong:  rgba(255,255,255,0.12);

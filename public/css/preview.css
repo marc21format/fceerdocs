@@ -412,7 +412,7 @@ body[data-theme="dark"] .page-preview {
   position: relative;
   z-index: 2;
   background: #fff;
-  border: 1.5px solid #0d1117;
+  border: 1px solid #0d1117;
   border-radius: var(--radius);
   padding: 4px 5px;
   box-sizing: border-box;

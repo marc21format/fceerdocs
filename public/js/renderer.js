@@ -6,7 +6,8 @@ import {
   createQuestionTemplate,
   setQuestionCorrectChoice,
   addQuestionFromTemplate,
-  moveQuestionBefore
+  moveQuestionBefore,
+  moveQuestionAfter
 } from './state.js';
 import {
   PAGE,
@@ -216,31 +217,53 @@ export function buildQuestionEditor(question) {
     card.classList.add("dragging");
     event.dataTransfer.effectAllowed = "move";
     event.dataTransfer.setData("text/plain", question.id);
+    const dragImg = document.createElement("div");
+    dragImg.className = "drag-ghost";
+    dragImg.innerHTML = `<div class="drag-ghost-title">Question ${question.number}</div><div class="drag-ghost-preview">${question.stem?.replace(/<[^>]*>/g, "").trim().slice(0, 80) || "Empty question"}</div>`;
+    document.body.append(dragImg);
+    event.dataTransfer.setDragImage(dragImg, 0, 0);
+    requestAnimationFrame(() => dragImg.remove());
   });
 
   card.addEventListener("dragend", () => {
     uiState.draggedQuestionId = "";
     card.classList.remove("dragging");
-    document.querySelectorAll(".question-editor-card.drop-target").forEach((node) => node.classList.remove("drop-target"));
+    document.querySelectorAll(".question-editor-card.drop-above, .question-editor-card.drop-below").forEach((node) => node.classList.remove("drop-above", "drop-below"));
   });
 
   card.addEventListener("dragover", (event) => {
     if (!uiState.draggedQuestionId || uiState.draggedQuestionId === question.id) return;
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
-    card.classList.add("drop-target");
+    const rect = card.getBoundingClientRect();
+    const midY = rect.top + rect.height / 2;
+    card.classList.remove("drop-above", "drop-below");
+    if (event.clientY < midY) {
+      card.classList.add("drop-above");
+    } else {
+      card.classList.add("drop-below");
+    }
   });
 
-  card.addEventListener("dragleave", () => {
-    card.classList.remove("drop-target");
+  card.addEventListener("dragleave", (event) => {
+    if (!card.contains(event.relatedTarget)) {
+      card.classList.remove("drop-above", "drop-below");
+    }
   });
 
   card.addEventListener("drop", (event) => {
     event.preventDefault();
-    card.classList.remove("drop-target");
+    const rect = card.getBoundingClientRect();
+    const midY = rect.top + rect.height / 2;
+    const dropAbove = event.clientY < midY;
+    card.classList.remove("drop-above", "drop-below");
     const sourceId = event.dataTransfer.getData("text/plain") || uiState.draggedQuestionId;
     if (!sourceId || sourceId === question.id) return;
-    moveQuestionBefore(sourceId, question.id);
+    if (dropAbove) {
+      moveQuestionBefore(sourceId, question.id);
+    } else {
+      moveQuestionAfter(sourceId, question.id);
+    }
   });
 
   card.addEventListener("toggle", () => {
@@ -382,13 +405,10 @@ export function buildQuestionEditor(question) {
   const imageControls = fragment.querySelector(".question-image-controls");
   imageControls.hidden = !question.image?.dataUrl;
 
-  const deleteImageBtn = fragment.querySelector(".delete-question-image-btn");
-  deleteImageBtn.hidden = !question.image?.dataUrl;
-
   const fileWrapper = fragment.querySelector(".question-image-wrapper");
   const fileLabel = fileWrapper?.querySelector(".file-input-label");
   if (question.image?.dataUrl && fileLabel) {
-    fileLabel.textContent = "Image attached";
+    fileLabel.textContent = question.imageFileName || "Image attached";
     fileWrapper.classList.add("has-file");
   }
 
@@ -400,53 +420,18 @@ export function buildQuestionEditor(question) {
     rerenderPreview("Image position updated", { syncQuestions: true });
   });
 
-  const imageWidthInput = fragment.querySelector(".question-image-width-input");
-  imageWidthInput.value = question.imageBox.width || question.imageWidth;
-  imageWidthInput.addEventListener("input", (event) => {
-    const width = Number(event.target.value);
-    question.imageWidth = width;
-    question.imageBox.width = width;
-    question.imageBox.height = getQuestionImageHeight(question, width);
-    alignQuestionImageBox(question);
-    rerenderPreview("Image width updated", { syncQuestions: true });
-  });
-
-  const imageXInput = fragment.querySelector(".question-image-x-input");
-  imageXInput.value = question.imageBox.x ?? 0;
-  imageXInput.addEventListener("input", (event) => {
-    question.imageBox.x = Number(event.target.value);
-    rerenderPreview("Image X updated", { syncQuestions: true });
-  });
-
-  const imageYInput = fragment.querySelector(".question-image-y-input");
-  imageYInput.value = question.imageBox.y ?? 0;
-  imageYInput.addEventListener("input", (event) => {
-    question.imageBox.y = Number(event.target.value);
-    rerenderPreview("Image Y updated", { syncQuestions: true });
-  });
-
   fragment.querySelector(".question-image-input").addEventListener("change", async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
     _cbs.setStatus("Optimizing question image...");
     updateFileInputLabel(event.target, file.name);
+    question.imageFileName = file.name;
     question.image = await readQuestionImageFile(file);
     question.imageBox.width = question.imageWidth || 150;
     question.imageBox.height = getQuestionImageHeight(question, question.imageBox.width);
     alignQuestionImageBox(question);
     rerenderPreview("Question image added", { syncEditors: true, syncQuestions: true });
     event.target.value = "";
-  });
-
-  deleteImageBtn.addEventListener("click", (event) => {
-    event.preventDefault();
-    question.image = { dataUrl: "", width: 0, height: 0 };
-    question.imageBox = { x: 0, y: 0, width: question.imageWidth || 150, height: 120 };
-    if (fileLabel) {
-      fileLabel.textContent = "Choose image\u2026";
-      fileWrapper.classList.remove("has-file");
-    }
-    rerenderPreview("Question image removed", { syncEditors: true, syncQuestions: true });
   });
 
   const imageNoteInput = fragment.querySelector(".question-image-note-input");

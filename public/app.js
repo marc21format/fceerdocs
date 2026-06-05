@@ -143,6 +143,8 @@ export const elements = {
   bodyLayoutMode: null,
   layoutSingleBtn: document.querySelector("#layout-single-btn"),
   layoutTwoBtn: document.querySelector("#layout-two-btn"),
+  layoutAddBtn: document.querySelector("#layout-add-btn"),
+  layoutPillToggle: document.querySelector(".layout-pill-toggle"),
   headerImageInput: document.querySelector("#header-image-input"),
   examSubjectInput: document.querySelector("#exam-subject-input"),
   examTypeInput: document.querySelector("#exam-type-input"),
@@ -166,6 +168,7 @@ export const elements = {
   questionCorrectAnswerInput: document.querySelector("#question-correct-answer-input"),
   questionExplanationInput: document.querySelector("#question-explanation-input"),
   watermarkImageInput: document.querySelector("#watermark-image-input"),
+  watermarkControls: document.querySelector("#watermark-controls"),
   watermarkOpacityInput: document.querySelector("#watermark-opacity-input"),
   watermarkScaleInput: document.querySelector("#watermark-scale-input"),
   watermarkDarknessInput: document.querySelector("#watermark-darkness-input"),
@@ -314,12 +317,12 @@ function syncToolbarFields() {
   populateFontSelect(elements.fontFamily);
   populateFontSelect(elements.questionFontFamilyInput);
   const isTwoColumn = state.pageLayout.bodyLayoutMode === "two-column-compact";
-  if (elements.columnGapField) elements.columnGapField.hidden = !isTwoColumn;
   elements.fontFamily.value = state.template.titleBlock.style.fontFamily;
   if (elements.questionFontFamilyInput) elements.questionFontFamilyInput.value = state.questionStyle.fontFamily;
-  if (elements.questionFontSizeInput) elements.questionFontSizeInput.value = state.questionStyle.fontSize;
+  if (elements.questionFontSizeInput) elements.questionFontSizeInput.value = Number(state.questionStyle.fontSize).toFixed(1);
   if (elements.layoutSingleBtn) elements.layoutSingleBtn.classList.toggle("active", !isTwoColumn);
   if (elements.layoutTwoBtn) elements.layoutTwoBtn.classList.toggle("active", isTwoColumn);
+  if (elements.layoutPillToggle) elements.layoutPillToggle.dataset.active = isTwoColumn ? "two" : "single";
   elements.examSubjectInput.value = state.examDetails.subject;
   elements.examTypeInput.value = state.examDetails.examType;
   if (state.examDetails.examType === 'mock test') {
@@ -329,16 +332,16 @@ function syncToolbarFields() {
     elements.examNumberInput.value = state.examDetails.examNumber;
     elements.examNumberInput.disabled = false;
   }
-  elements.pageMarginLeftInput.value = state.template.pageMargins.left;
-  elements.pageMarginRightInput.value = state.template.pageMargins.right;
+  elements.pageMarginLeftInput.value = Number(state.template.pageMargins.left).toFixed(1);
+  elements.pageMarginRightInput.value = Number(state.template.pageMargins.right).toFixed(1);
   if (elements.questionGapInput) {
-    elements.questionGapInput.value = String(getSelectedQuestionGapValue());
+    elements.questionGapInput.value = Number(getSelectedQuestionGapValue()).toFixed(1);
   }
   if (elements.questionGapScopeLabel) {
     elements.questionGapScopeLabel.textContent = getQuestionGapScopeText();
   }
   if (elements.columnGapInput) {
-    elements.columnGapInput.value = state.pageLayout.columnGap;
+    elements.columnGapInput.value = Number(state.pageLayout.columnGap).toFixed(1);
   }
   elements.titleTextInput.innerHTML = state.template.titleBlock.text;
   elements.instructionTextInput.innerHTML = state.template.instructionBlock.text;
@@ -354,6 +357,7 @@ function syncToolbarFields() {
   elements.watermarkScaleInput.value = state.watermark.scale;
   elements.watermarkDarknessInput.value = state.watermark.darkness;
   elements.watermarkContrastInput.value = state.watermark.contrast;
+  if (elements.watermarkControls) elements.watermarkControls.hidden = !state.watermark.image?.dataUrl;
   applySidebarWidth(state.ui.sidebarWidth);
 }
 
@@ -448,7 +452,7 @@ function bindGlobalInputs() {
     });
   }
 
-  elements.addQuestion.addEventListener("click", (event) => {
+  elements.addQuestion?.addEventListener("click", (event) => {
     event.preventDefault();
     addQuestionFromTemplate();
   });
@@ -621,6 +625,7 @@ function bindGlobalInputs() {
 
   elements.layoutSingleBtn?.addEventListener("click", () => setLayoutMode("single-column"));
   elements.layoutTwoBtn?.addEventListener("click", () => setLayoutMode("two-column-compact"));
+  elements.layoutAddBtn?.addEventListener("click", () => addQuestionFromTemplate());
 
   navButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -680,42 +685,46 @@ function bindGlobalInputs() {
     saveState("Exam type updated");
   });
 
-  elements.examNumberInput.addEventListener("input", (event) => {
-    const raw = Math.floor(Number(event.target.value) || 1);
-    const clamped = Math.min(5, Math.max(1, raw));
-    state.examDetails.examNumber = clamped;
-    try {
-      event.target.value = String(clamped);
-    } catch (e) {}
-    applyExamDetailsToQuestions();
-    saveState("Exam number updated");
-  });
+  if (elements.examNumberInput) {
+    elements.examNumberInput.addEventListener("input", (event) => {
+      const raw = Math.floor(Number(event.target.value) || 1);
+      const clamped = Math.min(5, Math.max(1, raw));
+      state.examDetails.examNumber = clamped;
+      try {
+        event.target.value = String(clamped);
+      } catch (e) {}
+      applyExamDetailsToQuestions();
+      saveState("Exam number updated");
+    });
+  }
 
   elements.pageMarginLeftInput.addEventListener("input", (event) => {
-    state.template.pageMargins.left = Number(event.target.value);
+    const clamped = Math.min(15, Math.max(1, Number(event.target.value) || 1));
+    state.template.pageMargins.left = clamped;
+    event.target.value = Number(clamped).toFixed(1);
     rerenderPreview("Left margin updated");
   });
 
   elements.pageMarginRightInput.addEventListener("input", (event) => {
-    state.template.pageMargins.right = Number(event.target.value);
+    const clamped = Math.min(15, Math.max(1, Number(event.target.value) || 1));
+    state.template.pageMargins.right = clamped;
+    event.target.value = Number(clamped).toFixed(1);
     rerenderPreview("Right margin updated");
   });
 
   if (elements.questionGapInput) {
     elements.questionGapInput.addEventListener("input", (event) => {
-      const raw = Math.floor(Number(event.target.value) || 0);
-      const clamped = Math.min(32, Math.max(0, raw));
+      const clamped = Math.min(15, Math.max(1, Number(event.target.value) || 1));
       const result = setQuestionGapForSelection(clamped);
-      event.target.value = String(result.gap);
+      event.target.value = Number(result.gap).toFixed(1);
       rerenderPreview(result.scope === "column" ? "Column question gap updated" : "Question gap updated");
     });
   }
 
   elements.columnGapInput?.addEventListener("input", (event) => {
-    const raw = Math.floor(Number(event.target.value) || 0);
-    const clamped = Math.min(120, Math.max(0, raw));
+    const clamped = Math.min(15, Math.max(1, Number(event.target.value) || 1));
     state.pageLayout.columnGap = clamped;
-    event.target.value = String(clamped);
+    event.target.value = Number(clamped).toFixed(1);
     rerenderPreview("Column gap updated");
   });
 
@@ -724,13 +733,13 @@ function bindGlobalInputs() {
       const targetId = btn.dataset.target;
       const input = document.getElementById(targetId);
       if (!input) return;
-      const step = Number(input.step) || 1;
-      const min = Number(input.min) || 0;
-      const max = Number(input.max) || 999;
+      const step = Number(input.step) || 0.1;
+      const min = Number(input.min) || 1;
+      const max = Number(input.max) || 15;
       const dir = btn.dataset.dir === "up" ? 1 : -1;
-      const raw = Number(input.value) || 0;
+      const raw = Number(input.value) || 1;
       const next = Math.min(max, Math.max(min, raw + dir * step));
-      input.value = String(next);
+      input.value = Number(next).toFixed(1);
       input.dispatchEvent(new Event("input", { bubbles: true }));
     });
   });
@@ -741,10 +750,9 @@ function bindGlobalInputs() {
   });
 
   elements.questionFontSizeInput?.addEventListener("input", (event) => {
-    const numeric = Number(event.target.value);
-    const clamped = Number.isFinite(numeric) ? clamp(numeric, 6, 32) : defaultState.questionStyle.fontSize;
+    const clamped = Math.min(15, Math.max(1, Number(event.target.value) || 1));
     state.questionStyle.fontSize = clamped;
-    event.target.value = String(clamped);
+    event.target.value = Number(clamped).toFixed(1);
     rerenderPreview("Question font size updated");
   });
 
@@ -854,6 +862,7 @@ function bindGlobalInputs() {
     if (!file) return;
     updateFileInputLabel(event.target, file.name);
     state.watermark.image.dataUrl = await readFileAsDataUrl(file);
+    if (elements.watermarkControls) elements.watermarkControls.hidden = false;
     rerenderPreview("Watermark image updated");
   });
   elements.watermarkOpacityInput.addEventListener("input", (event) => {
@@ -873,12 +882,60 @@ function bindGlobalInputs() {
     rerenderPreview("Watermark contrast updated");
   });
 
-  elements.footerImageInput.addEventListener("change", async (event) => {
+    elements.footerImageInput.addEventListener("change", async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
     updateFileInputLabel(event.target, file.name);
     placeFooterImage(await readImageFile(file));
     rerenderPreview("Footer image updated");
+  });
+
+  document.addEventListener("click", (event) => {
+    const clearBtn = event.target.closest(".file-clear-btn");
+    if (clearBtn) {
+      event.preventDefault();
+      event.stopPropagation();
+      const kind = clearBtn.dataset.clear;
+      const wrapper = clearBtn.closest(".file-input-wrapper");
+      if (!wrapper) return;
+      const input = wrapper.querySelector("input[type='file']");
+      if (input) { input.value = ""; }
+      const label = wrapper.querySelector(".file-input-label");
+      if (label) {
+        const defaults = { "header-image": "Choose header image\u2026", "footer-image": "Choose footer image\u2026", "watermark-image": "Choose watermark image\u2026", "question-image": "Choose image\u2026" };
+        label.textContent = defaults[kind] || "Choose file\u2026";
+      }
+      wrapper.classList.remove("has-file");
+      if (kind === "watermark-image") {
+        state.watermark.image.dataUrl = "";
+        if (elements.watermarkControls) elements.watermarkControls.hidden = true;
+        rerenderPreview("Watermark removed");
+      } else if (kind === "header-image") {
+        placeHeaderImage(null);
+        rerenderPreview("Header image removed");
+      } else if (kind === "footer-image") {
+        placeFooterImage(null);
+        rerenderPreview("Footer image removed");
+      } else if (kind === "question-image") {
+        const card = clearBtn.closest(".question-editor-card");
+        if (card) {
+          const qId = card.dataset.questionId;
+          const q = state.questions.find((q) => q.id === qId);
+          if (q) {
+            q.image = { dataUrl: "", width: 0, height: 0 };
+            q.imageFileName = "";
+          }
+        }
+        rerenderPreview("Question image removed", { syncEditors: true, syncQuestions: true });
+      }
+      return;
+    }
+    const btn = event.target.closest(".file-input-btn");
+    if (btn) {
+      const wrapper = btn.closest(".file-input-wrapper");
+      const input = wrapper?.querySelector("input[type='file']");
+      if (input) input.click();
+    }
   });
 
   elements.sidebarResizer?.addEventListener("pointerdown", startSidebarResize);
@@ -1019,6 +1076,7 @@ contextMenu?.addEventListener("click", (event) => {
     normalizeNumbers();
     renderPages();
     syncToolbarFields();
+    renderQuestionEditors();
     queueQuestionSync("Question removed via context menu");
 
   } else if (action === "duplicate") {
@@ -1243,6 +1301,17 @@ try {
   bindGlobalInputs();
   initCsvImport(elements, { fetchDatabaseQuestions, setDatabaseStatus });
   initCustomSelects();
+  elements.examNumberInput = document.querySelector("#exam-number-input");
+  if (elements.examNumberInput) {
+    elements.examNumberInput.addEventListener("input", (event) => {
+      const raw = Math.floor(Number(event.target.value) || 1);
+      const clamped = Math.min(5, Math.max(1, raw));
+      state.examDetails.examNumber = clamped;
+      try { event.target.value = String(clamped); } catch (e) {}
+      applyExamDetailsToQuestions();
+      saveState("Exam number updated");
+    });
+  }
   // Initialize active settings card
   const firstCard = document.querySelector('.settings-card[data-panel="header-footer"]');
   if (firstCard) firstCard.setAttribute('data-active', 'true');

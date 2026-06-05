@@ -113,7 +113,7 @@ export function normalizeState(nextState) {
     nextState.examDetails.itemsCount = nextState.questions.length || defaultState.examDetails.itemsCount;
   }
   nextState.ui.sidebarWidth = clampNonNegativeInteger(nextState.ui.sidebarWidth, defaultState.ui.sidebarWidth);
-  nextState.ui.sidebarWidth = clamp(nextState.ui.sidebarWidth || defaultState.ui.sidebarWidth, 310, 650); // SIDEBAR_MIN_WIDTH, SIDEBAR_MAX_WIDTH
+  nextState.ui.sidebarWidth = clamp(nextState.ui.sidebarWidth || defaultState.ui.sidebarWidth, 380, 650); // SIDEBAR_MIN_WIDTH, SIDEBAR_MAX_WIDTH
   if (!nextState.examDetails.subject) nextState.examDetails.subject = defaultState.examDetails.subject;
   if (!nextState.examDetails.examType) nextState.examDetails.examType = defaultState.examDetails.examType;
   if (!Number.isFinite(Number(nextState.examDetails.examNumber))) nextState.examDetails.examNumber = defaultState.examDetails.examNumber;
@@ -371,7 +371,7 @@ export function redo() {
 }
 
 export function placeHeaderImage(imageMeta) {
-  state.template.headerImage = imageMeta;
+  state.template.headerImage = imageMeta || { dataUrl: "", width: 0, height: 0 };
   const maxWidth = PAGE.width - 24;
   const targetWidth = clamp(
     state.template.headerBox.width || maxWidth,
@@ -384,7 +384,7 @@ export function placeHeaderImage(imageMeta) {
 }
 
 export function placeFooterImage(imageMeta) {
-  state.template.footerImage = imageMeta;
+  state.template.footerImage = imageMeta || { dataUrl: "", width: 0, height: 0 };
   const maxWidth = PAGE.width - 24;
   const targetWidth = clamp(
     state.template.footerBox.width || maxWidth,
@@ -436,6 +436,18 @@ export function moveQuestionBefore(sourceId, targetId) {
   const [moved] = state.questions.splice(sourceIndex, 1);
   const adjustedTargetIndex = state.questions.findIndex((question) => question.id === targetId);
   state.questions.splice(adjustedTargetIndex, 0, moved);
+  normalizeNumbers();
+  _cbs.render();
+  saveState("Questions reordered");
+}
+
+export function moveQuestionAfter(sourceId, targetId) {
+  const sourceIndex = state.questions.findIndex((question) => question.id === sourceId);
+  const targetIndex = state.questions.findIndex((question) => question.id === targetId);
+  if (sourceIndex < 0 || targetIndex < 0 || sourceIndex === targetIndex) return;
+  const [moved] = state.questions.splice(sourceIndex, 1);
+  const adjustedTargetIndex = state.questions.findIndex((question) => question.id === targetId);
+  state.questions.splice(adjustedTargetIndex + 1, 0, moved);
   normalizeNumbers();
   _cbs.render();
   saveState("Questions reordered");

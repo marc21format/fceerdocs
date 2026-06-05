@@ -1,5 +1,5 @@
-@import "./css/base.css";
-@import "./css/layout.css";
-@import "./css/components.css";
-@import "./css/modals.css";
-@import "./css/preview.css";
+@import "./css/base.css?v=2";
+@import "./css/layout.css?v=2";
+@import "./css/components.css?v=2";
+@import "./css/modals.css?v=2";
+@import "./css/preview.css?v=2";

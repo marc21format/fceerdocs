@@ -104,6 +104,22 @@ function setupCustomSelect(selectEl) {
   updateDisabledState();
   renderOptions();
 
+  if (wrapper.parentElement?.classList.contains('combined-select-input')) {
+    const divider = document.createElement('div');
+    divider.className = 'combined-divider';
+    const numInput = document.createElement('input');
+    numInput.type = 'number';
+    numInput.id = 'exam-number-input';
+    numInput.min = '1';
+    numInput.max = '5';
+    numInput.step = '1';
+    numInput.placeholder = '#';
+    numInput.className = 'combined-number-input';
+    trigger.append(divider, numInput);
+    const icon = trigger.querySelector('.custom-select-icon');
+    if (icon) icon.style.display = 'none';
+  }
+
   const observer = new MutationObserver((mutations) => {
     let hasAttributeChange = false;
     let hasChildChange = false;
