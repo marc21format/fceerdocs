@@ -73,5 +73,5 @@ const server = createServer(async (req, res) => {
 });
 
 server.listen(port, () => {
-  console.log(`Test Builder running at http://localhost:${port}`);
+  console.log(`FCEERDocs running at http://localhost:${port}`);
 });

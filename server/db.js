@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { MongoClient, ServerApiVersion } from "mongodb";
 
 export const mongoUri = process.env.MONGODB_URI || "";
-export const mongoDbName = process.env.MONGODB_DB || "test_builder";
+export const mongoDbName = process.env.MONGODB_DB || "fceerdocs";
 
 export const allowedSubjects = [
   "Math 1 (algebra)",
