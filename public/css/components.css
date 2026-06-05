@@ -128,7 +128,7 @@
   flex-direction: column;
   border-top: 1px solid var(--line);
   padding: 4px 6px;
-  background: #f5f5f5;
+  background: var(--panel-inset);
 }
 
 .passage-editor-toolbar {
@@ -544,7 +544,7 @@ details.question-editor-card > summary::after { display: none; }
   list-style: none;
   padding: 10px 12px;
   user-select: none;
-  background: #f8F8F8;
+  background: var(--panel-inset);
 }
 
 .question-editor-header-content {
@@ -975,16 +975,8 @@ body[data-theme="dark"] .custom-select-option.selected {
 }
 
 /* ─── Dark Mode Overrides ──────────────────────────────────────────────── */
-body[data-theme="dark"] .stem-editor-toolbar {
-  background: #161a1f;
-}
-
 body[data-theme="dark"] .question-editor-card {
   background: #1a1e24;
-}
-
-body[data-theme="dark"] .question-editor-header {
-  background: #111316;
 }
 
 body[data-theme="dark"] .question-editor-body {

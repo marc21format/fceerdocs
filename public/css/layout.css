@@ -13,7 +13,7 @@
   justify-content: center;
   gap: 2px;
   padding: 6px 8px;
-  background: var(--toolbar-bg);
+  background: var(--panel-inset);
   backdrop-filter: var(--toolbar-blur);
   border-bottom: 1px solid var(--line);
   z-index: 9;
