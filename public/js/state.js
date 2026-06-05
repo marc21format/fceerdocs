@@ -15,7 +15,6 @@ import {
   createChoice
 } from './utils.js';
 
-// ─── Callback registry (breaks circular dependency with app.js) ───────────────
 const _cbs = { setStatus: () => {}, applyTheme: () => {}, updateHistoryButtons: () => {}, render: () => {} };
 export function registerStateCallbacks({ setStatus, applyTheme, updateHistoryButtons, render }) {
   if (setStatus) _cbs.setStatus = setStatus;
@@ -113,12 +112,11 @@ export function normalizeState(nextState) {
     nextState.examDetails.itemsCount = nextState.questions.length || defaultState.examDetails.itemsCount;
   }
   nextState.ui.sidebarWidth = clampNonNegativeInteger(nextState.ui.sidebarWidth, defaultState.ui.sidebarWidth);
-  nextState.ui.sidebarWidth = clamp(nextState.ui.sidebarWidth || defaultState.ui.sidebarWidth, 380, 650); // SIDEBAR_MIN_WIDTH, SIDEBAR_MAX_WIDTH
+  nextState.ui.sidebarWidth = clamp(nextState.ui.sidebarWidth || defaultState.ui.sidebarWidth, 380, 650); 
   if (!nextState.examDetails.subject) nextState.examDetails.subject = defaultState.examDetails.subject;
   if (!nextState.examDetails.examType) nextState.examDetails.examType = defaultState.examDetails.examType;
   if (!Number.isFinite(Number(nextState.examDetails.examNumber))) nextState.examDetails.examNumber = defaultState.examDetails.examNumber;
   nextState.examDetails.itemsCount = nextState.questions.length;
-  // Note: applyExamDetailsToQuestions is called later if necessary or directly
   return nextState;
 }
 
@@ -314,7 +312,6 @@ export function autoReserveFooterSpace(sourceState = state) {
   footer.y = clamp(pageBottom - footer.height - footerBuffer, 0, pageBottom - footer.height);
 }
 
-// ─── History Management ──────────────────────────────────────────────────────
 export let historyStack = [];
 export let historyIndex = -1;
 export let isUndoingRedoing = false;

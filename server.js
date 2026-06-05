@@ -47,7 +47,6 @@ const server = createServer(async (req, res) => {
     const pathname = requestUrl.pathname;
     console.log(`[${new Date().toISOString()}] ${req.method} ${pathname}`);
 
-    // Try routing via the API route controller
     const handled = await handleApiRoute(req, res, pathname, requestUrl);
     if (handled) {
       return;

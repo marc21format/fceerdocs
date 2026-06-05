@@ -9,7 +9,6 @@ import {
 } from "./db.js";
 import { renderHtmlToPdf } from "./pdf.js";
 
-// Response Helpers
 export function send(res, status, body, contentType = "text/plain; charset=utf-8") {
   res.writeHead(status, {
     "Content-Type": contentType,
@@ -33,7 +32,6 @@ export async function readJsonBody(req) {
   return JSON.parse(body);
 }
 
-// Similarity Helpers
 function normalizeForSimilarity(value = "") {
   return String(value)
     .toLowerCase()
@@ -75,9 +73,9 @@ function levenshteinDistance(a = "", b = "") {
     for (let i = 1; i <= normA.length; i += 1) {
       const indicator = normA[i - 1] === normB[j - 1] ? 0 : 1;
       track[j][i] = Math.min(
-        track[j][i - 1] + 1, // deletion
-        track[j - 1][i] + 1, // insertion
-        track[j - 1][i - 1] + indicator // substitution
+        track[j][i - 1] + 1,
+        track[j - 1][i] + 1, 
+        track[j - 1][i - 1] + indicator 
       );
     }
   }
@@ -107,7 +105,7 @@ export function questionSimilarity(a = {}, b = {}) {
     const used = Array(choicesB.length).fill(false);
     for (const charA of choicesA) {
       let bestIndex = -1;
-      let bestScore = 0.8; // threshold for choice match similarity
+      let bestScore = 0.8; 
       for (let j = 0; j < choicesB.length; j += 1) {
         if (used[j]) continue;
         const score = characterSimilarity(charA, choicesB[j]);
@@ -136,9 +134,7 @@ export function questionFingerprint(question = {}) {
   return `${stem}::${choices}::${image}`;
 }
 
-// Router Entry Point
 export async function handleApiRoute(req, res, pathname, requestUrl) {
-  // 1. GET /api/questions
   if (pathname === "/api/questions" && req.method === "GET") {
     try {
       console.log("Fetching questions from MongoDB...");
@@ -151,7 +147,6 @@ export async function handleApiRoute(req, res, pathname, requestUrl) {
     return true;
   }
 
-  // 2. POST /api/questions/duplicates
   if (pathname === "/api/questions/duplicates" && req.method === "POST") {
     try {
       const body = await readJsonBody(req);
@@ -233,7 +228,6 @@ export async function handleApiRoute(req, res, pathname, requestUrl) {
     return true;
   }
 
-  // 3. POST /api/questions
   if (pathname === "/api/questions" && req.method === "POST") {
     try {
       const body = await readJsonBody(req);
@@ -247,7 +241,6 @@ export async function handleApiRoute(req, res, pathname, requestUrl) {
     return true;
   }
 
-  // 4. POST /api/questions/bulk
   if (pathname === "/api/questions/bulk" && req.method === "POST") {
     try {
       const body = await readJsonBody(req);
@@ -268,7 +261,6 @@ export async function handleApiRoute(req, res, pathname, requestUrl) {
     return true;
   }
 
-  // 5. POST /api/export/pdf
   if (pathname === "/api/export/pdf" && req.method === "POST") {
     let body = "";
     req.on("data", (chunk) => {
@@ -299,7 +291,6 @@ export async function handleApiRoute(req, res, pathname, requestUrl) {
     return true;
   }
 
-  // 6. Question ID specific endpoints: GET /api/questions/:id, PUT /api/questions/:id, DELETE /api/questions/:id
   const questionMatch = pathname.match(/^\/api\/questions\/([^/]+)$/);
   if (questionMatch) {
     const questionId = decodeURIComponent(questionMatch[1]);
@@ -349,5 +340,5 @@ export async function handleApiRoute(req, res, pathname, requestUrl) {
     }
   }
 
-  return false; // Not an API route or not matched
+  return false; 
 }

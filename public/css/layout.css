@@ -6,7 +6,6 @@
   overflow: hidden;
 }
 
-/* ─── Settings Navbar ────────────────────────────────────────────────────── */
 .settings-navbar {
   display: flex;
   align-items: center;
@@ -26,7 +25,6 @@
   margin-left: auto;
 }
 
-/* Slightly compact the action buttons (undo/redo/question bank/export) */
 .settings-navbar-actions .toolbar-btn {
   padding: 5px 11px;
   font-size: 12px;
@@ -123,7 +121,6 @@
   opacity: 0.7;
 }
 
-/* ─── Workspace ──────────────────────────────────────────────────────────── */
 .workspace {
   display: flex;
   align-items: stretch;
@@ -201,7 +198,6 @@ body.sidebar-resizing .sidebar-resizer::after {
   background: var(--text-soft);
 }
 
-/* ─── Settings Cards ─────────────────────────────────────────────────────── */
 .settings-card {
   display: none;
   background: var(--panel);
@@ -444,14 +440,12 @@ body.sidebar-resizing {
   user-select: none;
 }
 
-/* ─── Two Col Grid ───────────────────────────────────────────────────────── */
 .two-col-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
-/* ─── Compact Style Row ─────────────────────────────────────────────────── */
 .style-row {
   display: flex;
   align-items: center;
@@ -479,7 +473,6 @@ body.sidebar-resizing {
   overflow: hidden;
 }
 
-/* Font select - full width row */
 .style-select {
   width: 100%;
   padding: 0 22px 0 8px;
@@ -505,7 +498,6 @@ body.sidebar-resizing {
   background-color: var(--panel-inset);
 }
 
-/* Numeric pill */
 .style-pill--num {
   gap: 1px;
 }
@@ -530,7 +522,6 @@ body.sidebar-resizing {
   box-shadow: none;
 }
 
-/* Small numeric pill (gaps/margins) */
 .style-pill--sm {
   gap: 1px;
   padding: 0 2px;
@@ -571,7 +562,6 @@ body.sidebar-resizing {
   color: var(--text-muted);
 }
 
-/* Icon-only button */
 .style-btn {
   display: inline-flex;
   align-items: center;
@@ -602,7 +592,6 @@ body.sidebar-resizing {
   border-color: var(--line-strong);
 }
 
-/* Chevron buttons */
 .chevron-stack {
   display: inline-flex;
   flex-direction: column;
@@ -632,7 +621,6 @@ body.sidebar-resizing {
   height: 6px;
 }
 
-/* ─── Page Ruler ─────────────────────────────────────────────────────────── */
 .page-ruler {
   position: absolute;
   inset: 0 auto auto 0;
@@ -643,7 +631,6 @@ body.sidebar-resizing {
   opacity: 0.35;
 }
 
-/* ─── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .duplicate-modal-grid { grid-template-columns: 1fr; }
   .save-confirm-modal-card { width: min(860px, calc(100vw - 24px)); }
@@ -673,7 +660,6 @@ body.sidebar-resizing {
   .page-preview { order: -1; }
 }
 
-/* ─── Dark Mode Overrides ──────────────────────────────────────────────── */
 body[data-theme="dark"] .layout-pill-toggle {
   background: #1a1e24;
   border-color: rgba(255,255,255,0.08);

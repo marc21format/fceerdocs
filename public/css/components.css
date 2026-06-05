@@ -1,5 +1,4 @@
 
-/* ─── Buttons ────────────────────────────────────────────────────────────── */
 .toolbar-btn {
   display: inline-flex;
   align-items: center;
@@ -63,7 +62,6 @@
 
 .toolbar-btn[hidden] { display: none !important; }
 
-/* ─── Format Toolbar ─────────────────────────────────────────────────────── */
 .format-toolbar {
   display: flex;
   align-items: center;
@@ -109,7 +107,6 @@
   color: var(--accent);
 }
 
-/* ─── Stem Editor Toolbar ──────────────────────────────────────────────── */
 .stem-editor-wrap {
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
@@ -328,7 +325,6 @@ body[data-theme="dark"] .stem-format-btn.active {
 .question-passage-input[contenteditable] i { font-style: italic; }
 .question-passage-input[contenteditable] u { text-decoration: underline; }
 
-/* ─── Inline Editing ─────────────────────────────────────────────────────── */
 .preview-editable {
   cursor: text;
   border-radius: 3px;
@@ -340,7 +336,6 @@ body[data-theme="dark"] .stem-format-btn.active {
 }
 
 .inline-text-editor {
-  /* always fill parent, never exceed column width */
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
@@ -369,8 +364,6 @@ body[data-theme="dark"] .inline-text-editor {
   background-color: rgba(255,255,255,0.98);
 }
 
-/* ─── File Input (styled as button) ─────────────────────────────────────── */
-/* Hide native input, expose via label wrapper */
 .file-input-wrapper {
   position: relative;
   display: block;
@@ -466,13 +459,11 @@ body[data-theme="dark"] .file-input-wrapper .file-clear-btn {
   color: var(--text-soft);
 }
 
-/* ─── Question List ──────────────────────────────────────────────────────── */
 .question-list {
   display: grid;
   gap: 8px;
 }
 
-/* ─── Question Editor Card ───────────────────────────────────────────────── */
 .question-editor-card {
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
@@ -586,6 +577,24 @@ details.question-editor-card > summary::after { display: none; }
   padding-top: 2px;
 }
 
+.question-editor-body label .custom-select-wrapper {
+  display: block;
+  width: 100% !important;
+}
+
+.question-editor-body label .custom-select-trigger {
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+.question-correct-answer-input {
+  width: 100% !important;
+}
+
+.question-editor-body label:has(.question-correct-answer-input) {
+  grid-column: 1 / -1;
+}
+
 .section-divider {
   border: none;
   border-top: 1px solid var(--line);
@@ -615,7 +624,11 @@ details.question-editor-card > summary::after { display: none; }
   text-align: center;
 }
 
-/* ─── Hint ───────────────────────────────────────────────────────────────── */
+.question-correct-answer-input {
+  width: 100%;
+  grid-column: 1 / -1;
+}
+
 .hint {
   color: var(--text-muted);
   font-size: 11.5px;
@@ -632,8 +645,6 @@ code {
   color: var(--accent);
 }
 
-/* ─── Custom Context Menu ────────────────────────────────────────────────── */
-/* IMPORTANT: must override display:flex so [hidden] actually hides it */
 .custom-context-menu[hidden] { display: none !important; }
 
 .custom-context-menu {
@@ -681,7 +692,6 @@ code {
   outline: 1px solid transparent;
   transition: outline-color 100ms ease, box-shadow 100ms ease, background 100ms ease;
   cursor: pointer;
-  /* prevent overflow in 1-column mode */
   width: 100%;
   box-sizing: border-box;
   overflow: hidden;
@@ -714,7 +724,6 @@ code {
   margin: 3px 0;
 }
 
-/* ─── Custom Select ──────────────────────────────────────────────────────── */
 :root {
   --select-bg: #ffffff;
   --select-border: var(--line);
@@ -737,7 +746,6 @@ select.customized {
   display: none !important;
 }
 
-/* ─── Combined Select + Input ────────────────────────────────────────────── */
 .combined-select-input {
   margin-top: 4px;
 }
@@ -835,7 +843,6 @@ select.customized {
   outline: none;
 }
 
-/* Font select only */
 #global-font-family.customized ~ .custom-select-trigger {
   height: 28px;
   padding: 0 12px 0 8px;
@@ -962,7 +969,6 @@ body[data-theme="dark"] .custom-select-option.selected {
   color: var(--text);
 }
 
-/* Disabled State */
 .custom-select-wrapper.disabled {
   cursor: not-allowed;
 }
@@ -974,7 +980,6 @@ body[data-theme="dark"] .custom-select-option.selected {
   border-color: var(--line);
 }
 
-/* ─── Dark Mode Overrides ──────────────────────────────────────────────── */
 body[data-theme="dark"] .question-editor-card {
   background: #1a1e24;
 }

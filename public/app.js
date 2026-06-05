@@ -222,7 +222,6 @@ export const elements = {
   exportIssueClose: document.querySelector("#export-issue-close"),
   exportIssueMessage: document.querySelector("#export-issue-message"),
   panels: Array.from(document.querySelectorAll(".panel-section")),
-  // CSV bulk import
   csvFileInput: document.querySelector("#csv-file-input"),
   csvBulkImportBtn: document.querySelector("#database-bulk-import-btn"),
   csvMetadataModal: document.querySelector("#csv-metadata-modal"),
@@ -290,7 +289,6 @@ export function applyTheme() {
   elements.body.dataset.theme = state.themeMode;
 }
 
-// Wire callbacks
 registerStateCallbacks({ setStatus, applyTheme, updateHistoryButtons: () => updateHistoryButtons(), render });
 registerRendererCallbacks({ syncToolbarFields, setStatus, queueQuestionSync });
 registerDragCallbacks({ renderPages, applySidebarWidth });
@@ -641,7 +639,6 @@ function bindGlobalInputs() {
           card.removeAttribute("data-active");
         }
       });
-      // Collapse all questions when switching away from Questions panel
       if (panelName !== "questions") {
         state.questions.forEach((q) => { q.collapsed = true; });
         renderQuestionEditors();
@@ -954,7 +951,6 @@ function bindGlobalInputs() {
   }, { passive: true });
 }
 
-// Zoom logic & global state
 let currentZoom = 100;
 export function applyPreviewZoom() {
   const zoomLabel = document.getElementById("zoom-label");
@@ -983,7 +979,6 @@ document.addEventListener("click", (event) => {
   }
 });
 
-// ── Context Menu ──────────────────────────────────────────────────────────────
 let activeContextMenuQuestionId = null;
 const contextMenu = document.getElementById("custom-context-menu");
 
@@ -991,7 +986,6 @@ const hideContextMenu = () => {
   if (contextMenu && !contextMenu.hidden) contextMenu.hidden = true;
 };
 
-// Show on right-click over a question-preview or question-editor-card
 document.addEventListener("contextmenu", (event) => {
   const targetQuestion = event.target.closest(".question-preview") || event.target.closest(".question-editor-card");
   if (!targetQuestion) { hideContextMenu(); return; }
@@ -1008,8 +1002,6 @@ document.addEventListener("contextmenu", (event) => {
   }
 });
 
-// Use capture-phase mousedown so it fires before any click handlers —
-// this is the only reliable way to dismiss before other handlers re-open it.
 document.addEventListener("mousedown", (event) => {
   if (!contextMenu || contextMenu.hidden) return;
   if (!event.target.closest(".custom-context-menu")) {
@@ -1017,11 +1009,9 @@ document.addEventListener("mousedown", (event) => {
   }
 }, true /* capture */);
 
-// Also hide on scroll anywhere
 document.getElementById("page-preview")?.addEventListener("scroll", hideContextMenu, { passive: true });
 window.addEventListener("scroll", hideContextMenu, { passive: true });
 
-// Deselect question on click outside question/sidebar
 document.addEventListener("pointerdown", (event) => {
   if (event.target.closest(".custom-context-menu")) return; // clicking menu = keep selection
   if (!event.target.closest(".question-preview") &&
@@ -1032,7 +1022,6 @@ document.addEventListener("pointerdown", (event) => {
   }
 });
 
-// Handle menu item clicks
 contextMenu?.addEventListener("click", (event) => {
   const item = event.target.closest(".context-item");
   if (!item || !activeContextMenuQuestionId) return;
@@ -1312,7 +1301,6 @@ try {
       saveState("Exam number updated");
     });
   }
-  // Initialize active settings card
   const firstCard = document.querySelector('.settings-card[data-panel="header-footer"]');
   if (firstCard) firstCard.setAttribute('data-active', 'true');
   render();
@@ -1323,7 +1311,6 @@ try {
   setStatus(error?.message || "Startup failed");
 }
 
-// Global tooltip handler to avoid overflow clipping
 document.addEventListener('mouseenter', (e) => {
   const btn = e.target.closest ? e.target.closest('.hint-icon-btn') : null;
   if (btn) {

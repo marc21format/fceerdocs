@@ -70,7 +70,6 @@ async function getChromiumPath() {
       chromiumPath = candidate;
       break;
     } catch {
-      // Keep trying known install locations.
     }
   }
   return chromiumPath;
@@ -255,14 +254,12 @@ function mapFontNameToPdfFont(fontName, isBold = false) {
   if (name.includes("courier")) {
     return isBold ? "CourierBold" : "Courier";
   }
-  // Default to Helvetica for Calibri, Arial, Georgia, etc.
   return isBold ? "HelveticaBold" : "Helvetica";
 }
 
 function getStandardFont(fontName, StandardFonts, isBold = false) {
   const name = mapFontNameToPdfFont(fontName, isBold);
   
-  // Use switch to directly get the font using the correct property names
   switch (name) {
     case "TimesRoman":
       return StandardFonts.TimesRoman;
@@ -546,7 +543,6 @@ export async function renderHtmlToPdf(html) {
   const chromiumPath = await getChromiumPath();
   let browser;
   try {
-    // Launch Puppeteer with local Chromium
     browser = await puppeteer.launch({
       executablePath: chromiumPath,
       headless: true,
@@ -555,17 +551,14 @@ export async function renderHtmlToPdf(html) {
     
     const page = await browser.newPage();
     
-    // Set viewport to match preview size
     await page.setViewport({
       width: 794,
       height: 1123
     });
     
-    // Set HTML content
     await page.setContent(html, { waitUntil: "networkidle0" });
     await new Promise((resolve) => setTimeout(resolve, 500));
     
-    // Generate PDF
     const pdfBuffer = await page.pdf({
       width: "794px",
       height: "1123px",

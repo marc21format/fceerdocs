@@ -43,7 +43,7 @@
   align-items: flex-start;
   padding: 18px 20px;
   border-bottom: 1px solid var(--line);
-  background: #fafafa;
+  background: var(--panel-muted);
 }
 
 .modal-header h2 {
@@ -52,18 +52,30 @@
   letter-spacing: -0.01em;
 }
 
+.modal-close-btn {
+  border: none !important;
+  background: none !important;
+  box-shadow: none !important;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  color: var(--text-soft);
+  cursor: pointer;
+}
+.modal-close-btn:hover {
+  background: none !important;
+  color: var(--text);
+}
+
 .modal-subtitle {
   color: var(--text-soft);
   font-size: 12.5px;
   margin-top: 3px;
 }
 
-/* ─── Export Issue Modal ─────────────────────────────────────────────────── */
 .export-issue-modal-card { width: min(460px, calc(100vw - 48px)); }
 .export-issue-modal-body { padding: 18px 20px; }
 .export-issue-modal-body p { color: var(--text); line-height: 1.5; font-size: 13.5px; }
 
-/* ─── Duplicate Save Modal ───────────────────────────────────────────────── */
 .duplicate-save-modal-card { width: min(980px, calc(100vw - 48px)); }
 
 .duplicate-modal-body {
@@ -134,7 +146,6 @@
   border-top: 1px solid var(--line);
 }
 
-/* ─── Save Confirm Modal ─────────────────────────────────────────────────── */
 .save-confirm-modal-card { width: min(860px, calc(100vw - 48px)); }
 
 .save-confirm-modal-body {
@@ -182,7 +193,6 @@
   font-size: 12.5px;
 }
 
-/* ─── Database Modal ─────────────────────────────────────────────────────── */
 .database-modal-layout {
   flex: 1;
   display: grid;
@@ -316,8 +326,8 @@ body.modal-resize-active iframe {
 .database-form-toolbar {
   justify-content: flex-end;
   padding-bottom: 2px;
-  position: relative;  /* ← dagdag */
-  z-index: 50;         /* ← dagdag */
+  position: relative; 
+  z-index: 50;        
 }
 .database-list-toolbar {
   justify-content: flex-start;
@@ -341,7 +351,7 @@ body.modal-resize-active iframe {
   background: var(--panel-muted);
   border-bottom: 1px solid var(--line);
   flex-shrink: 0;
-  margin: 0 -16px;        /* ← para full-width kahit may padding ang parent */
+  margin: 0 -16px;       
   padding: 6px 16px;
 }
 
@@ -419,7 +429,7 @@ body.modal-resize-active iframe {
   align-content: start;
   min-height: 0;
   overflow: auto;
-  padding: 0 16px 16px;   /* ← tanggalin ang top padding, hawak na ng sticky toolbar */
+  padding: 0 16px 16px;   
 }
 
 
@@ -439,7 +449,6 @@ body.modal-resize-active iframe {
   text-align: center;
 }
 
-/* ─── Database List Toolbar Spacer ──────────────────────────────────────── */
 .database-list-toolbar-spacer {
   flex: 1;
 }
@@ -449,9 +458,14 @@ body.modal-resize-active iframe {
   align-items: center;
 }
 
-/* Make the bulk import icon button visually distinct */
 #database-bulk-import-btn {
-  color: var(--accent);
+  color: var(--text-soft) !important;
+}
+
+#database-bulk-import-btn:hover,
+#database-bulk-import-btn:focus-visible {
+  background: var(--panel-muted) !important;
+  color: var(--text-soft) !important;
 }
 
 #database-bulk-import-btn:hover,
@@ -460,7 +474,6 @@ body.modal-resize-active iframe {
   color: var(--accent);
 }
 
-/* ─── CSV Metadata Modal ─────────────────────────────────────────────────── */
 .csv-metadata-modal-card {
   max-width: 520px;
   width: 100%;
@@ -514,7 +527,6 @@ body.modal-resize-active iframe {
   gap: 6px;
 }
 
-/* Loading state for submit button */
 #csv-metadata-submit[data-loading="true"] {
   opacity: 0.65;
   pointer-events: none;

@@ -70,15 +70,13 @@ export function updateFileInputLabel(inputEl, filename) {
 export function closeActiveInlineEditor() {
   if (!uiState.activeInlineEditor) return;
   const { container, commit } = uiState.activeInlineEditor;
-  uiState.activeInlineEditor = null; // clear FIRST so commit cannot re-enter
+  uiState.activeInlineEditor = null; 
   commit();
 }
 
 export function openInlineEditor(container, rawText, onCommit, options = {}) {
-  // If this exact container is already in edit mode, do nothing
   if (container.dataset.editing === "true") return;
 
-  // Explicitly close whatever other editor was open (different element)
   closeActiveInlineEditor();
 
   container.dataset.editing = "true";
@@ -87,8 +85,6 @@ export function openInlineEditor(container, rawText, onCommit, options = {}) {
   editor.className = "inline-text-editor";
   editor.value = rawText;
   editor.rows = Math.max(1, String(rawText).split("\n").length);
-  // Do NOT set explicit pixel width — CSS width:100% + box-sizing:border-box
-  // correctly constrains to the parent column in both 1-col and 2-col modes.
   editor.style.minHeight = `${Math.max(bounds.height, 22)}px`;
   editor.style.height = `${Math.max(bounds.height, 22)}px`;
   container.innerHTML = "";
@@ -100,7 +96,6 @@ export function openInlineEditor(container, rawText, onCommit, options = {}) {
   const commit = () => {
     if (container.dataset.editing !== "true") return;
     container.dataset.editing = "false";
-    // Unregister from the global tracker if this is still the active one
     if (uiState.activeInlineEditor?.container === container) {
       uiState.activeInlineEditor = null;
     }
@@ -108,7 +103,6 @@ export function openInlineEditor(container, rawText, onCommit, options = {}) {
     onCommit(value);
   };
 
-  // Register as the globally active editor
   uiState.activeInlineEditor = { container, commit };
 
   editor.addEventListener("keydown", (event) => {
@@ -134,7 +128,6 @@ export function openInlineEditorAfterRender(selection, rawText, onCommit, option
   if (!selection) return;
   let liveEl = null;
 
-  // choice:QUESTIONID:INDEX
   const choiceMatch = selection.match(/^choice:(.+):(\d+)$/);
   if (choiceMatch) {
     const questionId = choiceMatch[1];
@@ -146,7 +139,6 @@ export function openInlineEditorAfterRender(selection, rawText, onCommit, option
     }
   }
 
-  // question:QUESTIONID
   const questionMatch = !choiceMatch && selection.match(/^question:(.+)$/);
   if (questionMatch) {
     const questionId = questionMatch[1];
@@ -166,17 +158,11 @@ export function createInlineDisplay(tag, className, rawText, onCommit, options =
   el.addEventListener("click", (event) => {
     event.stopPropagation();
     const newSelection = options.selection || null;
-    // If already selected and already editing, do nothing
     if (state.ui.selected === newSelection && el.dataset.editing === "true") return;
-    // Update selection state
     state.ui.selected = newSelection;
     _cbs.syncToolbarFields();
-    // Commit any open editor after the new selection is set so any rerender
-    // from the commit already reflects the new active target.
     closeActiveInlineEditor();
-    // Rebuild the page so the old editor is gone and selection highlight is correct
     renderPages();
-    // Now find the live counterpart of this element and open the editor there
     openInlineEditorAfterRender(newSelection, rawText, onCommit, options);
   });
   return el;
@@ -627,13 +613,11 @@ export function createQuestionPreview(question, width) {
     }
 
     const hadActiveEditor = Boolean(uiState.activeInlineEditor);
-    // Set selection BEFORE rendering so highlights are correct from the start
     state.ui.selected = `question:${question.id}`;
     _cbs.syncToolbarFields();
     closeActiveInlineEditor();
 
     if (hadActiveEditor) {
-      // Re-render to clear stale highlights, then find the live DOM node
       renderPages();
       const liveGroup = elements.pagePreview.querySelector(
         `[data-question-id="${question.id}"] .question-stem`
@@ -1125,7 +1109,6 @@ export function createInteractiveFrame(kind, styleBox, extra = {}) {
     event.stopPropagation();
     state.ui.selected = kind;
     _cbs.syncToolbarFields();
-    // ── Close any previously open editor after the new selection is set ──
     closeActiveInlineEditor();
     renderPages();
   });
@@ -1250,7 +1233,6 @@ export function renderPages() {
     pageElement.innerHTML = `<div class="page-ruler"></div><div class="page-content"></div>`;
     const content = pageElement.querySelector(".page-content");
 
-    // ── Page background click: close editor + deselect ──────────────────
     pageElement.addEventListener("click", () => {
       state.ui.selected = null;
       _cbs.syncToolbarFields();
@@ -1347,7 +1329,6 @@ export function renderPages() {
         event.stopPropagation();
         state.ui.selected = `column:${pageIndex}:${columnIndex}`;
         _cbs.syncToolbarFields();
-        // ── Close any previously open editor after the new selection is set ──
         closeActiveInlineEditor();
         renderPages();
       });
@@ -1412,7 +1393,6 @@ export function renderPages() {
   });
   if (elements.pageCount) elements.pageCount.textContent = `${pages.length} page${pages.length > 1 ? "s" : ""}`;
   
-  // Apply the current zoom level after pages are fully rendered
   try {
     applyPreviewZoom();
   } catch (e) {

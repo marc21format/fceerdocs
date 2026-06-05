@@ -50,8 +50,6 @@ function setupCustomSelect(selectEl) {
   const menu = document.createElement('div');
   menu.className = 'custom-select-menu';
   
-  // Place native select inside wrapper so that clicks on label (which trigger select clicks)
-  // are detected as clicks inside the wrapper, preventing the menu from closing.
   selectEl.parentNode.insertBefore(wrapper, selectEl);
   wrapper.append(selectEl, trigger, menu);
 
@@ -170,7 +168,7 @@ function setupCustomSelect(selectEl) {
     });
     
     if (!isOpen) {
-      renderOptions(); // Ensure we're up to date
+      renderOptions(); 
       menu.classList.add('open');
       trigger.classList.add('open');
     }
