@@ -1,50 +1,8 @@
-import path from "node:path";
 import { stat } from "node:fs/promises";
-import { pathToFileURL } from "node:url";
 import puppeteer from "puppeteer-core";
-
-const pdfLibModulePath = path.join(
-  process.env.USERPROFILE || "C:\\Users\\Marc Ian C. Young",
-  ".cache",
-  "codex-runtimes",
-  "codex-primary-runtime",
-  "dependencies",
-  "node",
-  "node_modules",
-  ".pnpm",
-  "pdf-lib@1.17.1",
-  "node_modules",
-  "pdf-lib",
-  "cjs",
-  "index.js"
-);
-const imageSizeModulePath = path.join(
-  process.env.USERPROFILE || "C:\\Users\\Marc Ian C. Young",
-  ".cache",
-  "codex-runtimes",
-  "codex-primary-runtime",
-  "dependencies",
-  "node",
-  "node_modules",
-  ".pnpm",
-  "image-size@1.2.1",
-  "node_modules",
-  "image-size",
-  "dist",
-  "index.js"
-);
-const sharpModulePath = path.join(
-  process.env.USERPROFILE || "C:\\Users\\Marc Ian C. Young",
-  ".cache",
-  "codex-runtimes",
-  "codex-primary-runtime",
-  "dependencies",
-  "node",
-  "node_modules",
-  "sharp",
-  "lib",
-  "index.js"
-);
+import PDFLib from "pdf-lib";
+import imageSize from "image-size";
+import sharp from "sharp";
 
 function stripDataUrlPrefix(value = "") {
   const index = value.indexOf("base64,");
@@ -182,8 +140,6 @@ async function embedDataImage(pdfDoc, dataUrl) {
   if (mime === "png") return pdfDoc.embedPng(bytes);
   if (mime === "jpg") return pdfDoc.embedJpg(bytes);
   if (mime === "svg") {
-    const sharpModule = await import(pathToFileURL(sharpModulePath).href);
-    const sharp = sharpModule.default || sharpModule;
     const pngBytes = await sharp(bytes).png().toBuffer();
     return pdfDoc.embedPng(pngBytes);
   }
@@ -194,15 +150,11 @@ async function getImageDimensionsFromDataUrl(dataUrl) {
   if (!dataUrl) return null;
   const mime = getImageMime(dataUrl);
   if (mime === "svg") {
-    const sharpModule = await import(pathToFileURL(sharpModulePath).href);
-    const sharp = sharpModule.default || sharpModule;
     const bytes = Buffer.from(stripDataUrlPrefix(dataUrl), "base64");
     const metadata = await sharp(bytes).metadata();
     if (!metadata.width || !metadata.height) return null;
     return { width: metadata.width, height: metadata.height };
   }
-  const imageSizeModule = await import(pathToFileURL(imageSizeModulePath).href);
-  const imageSize = imageSizeModule.imageSize || imageSizeModule.default?.imageSize || imageSizeModule.default || imageSizeModule;
   const bytes = Buffer.from(stripDataUrlPrefix(dataUrl), "base64");
   const result = imageSize(bytes);
   if (!result?.width || !result?.height) return null;
@@ -212,8 +164,6 @@ async function getImageDimensionsFromDataUrl(dataUrl) {
 async function rasterizeSnapshotToPngBuffer(snapshot = {}) {
   const svg = getSvgFromSnapshot(snapshot);
   if (svg) {
-    const sharpModule = await import(pathToFileURL(sharpModulePath).href);
-    const sharp = sharpModule.default || sharpModule;
     return sharp(Buffer.from(svg, "utf8")).png().toBuffer();
   }
   if (typeof snapshot.dataUrl === "string" && snapshot.dataUrl.startsWith("data:image/")) {
@@ -221,8 +171,6 @@ async function rasterizeSnapshotToPngBuffer(snapshot = {}) {
     const bytes = Buffer.from(stripDataUrlPrefix(snapshot.dataUrl), "base64");
     if (mime === "png") return bytes;
     if (mime === "jpg") {
-      const sharpModule = await import(pathToFileURL(sharpModulePath).href);
-      const sharp = sharpModule.default || sharpModule;
       return sharp(bytes).png().toBuffer();
     }
   }
@@ -304,8 +252,7 @@ export async function buildPdfBuffer(exam) {
   const payload = exam;
   const snapshots = payload?.pageSnapshots || null;
   exam = payload?.exam || payload;
-  const pdfLib = await import(pathToFileURL(pdfLibModulePath).href);
-  const { PDFDocument, StandardFonts, rgb } = pdfLib;
+  const { PDFDocument, StandardFonts, rgb } = PDFLib;
   const pdf = await PDFDocument.create();
   const pageWidth = 595.28;
   const pageHeight = 841.89;
