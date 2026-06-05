@@ -7,7 +7,7 @@ import {
   toQuestionResponse,
   listQuestions
 } from "./db.js";
-import { renderHtmlToPdf, buildPdfBuffer } from "./pdf.js";
+import { renderHtmlToPdf } from "./pdf.js";
 
 export function send(res, status, body, contentType = "text/plain; charset=utf-8") {
   res.writeHead(status, {
@@ -269,22 +269,14 @@ export async function handleApiRoute(req, res, pathname, requestUrl) {
     req.on("end", async () => {
       try {
         const payload = JSON.parse(body);
-        const exam = payload.exam;
+        const html = payload.html;
         
-        if (!exam) {
-          send(res, 400, JSON.stringify({ error: "Exam data required" }), "application/json; charset=utf-8");
+        if (!html) {
+          send(res, 400, JSON.stringify({ error: "HTML content required" }), "application/json; charset=utf-8");
           return;
         }
         
-        let pdfBuffer;
-        try {
-          pdfBuffer = await buildPdfBuffer(exam);
-        } catch (err) {
-          console.warn("buildPdfBuffer failed, falling back to renderHtmlToPdf:", err.message);
-          const html = payload.html;
-          if (!html) throw err;
-          pdfBuffer = await renderHtmlToPdf(html);
-        }
+        const pdfBuffer = await renderHtmlToPdf(html);
         
         res.writeHead(200, {
           "Content-Type": "application/pdf",
