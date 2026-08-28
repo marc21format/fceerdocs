@@ -45,7 +45,7 @@ export const defaultState = {
     sidebarWidth: SIDEBAR_DEFAULT_WIDTH
   },
   template: {
-    headerImage: { dataUrl: "", width: 0, height: 0 },
+    headerImage: { dataUrl: "", width: 0, height: 0, imageFileName: "" },
     headerBox: { x: 12, y: 10, width: 770, height: 96 },
     pageMargins: { left: 24, right: 24, top: HALF_INCH, bottom: HALF_INCH },
     titleBlock: {
@@ -58,7 +58,7 @@ export const defaultState = {
       offsetY: 21,
       style: { fontFamily: "Calibri", fontSize: 10.5, bold: false, italic: false, underline: false }
     },
-    footerImage: { dataUrl: "", width: 0, height: 0 },
+    footerImage: { dataUrl: "", width: 0, height: 0, imageFileName: "" },
     footerBox: { x: 12, y: 1078, width: 770, height: 36 },
     pageNumberConfig: { visible: true, x: 750, y: 1048, fontSize: 10 }
   },
@@ -83,7 +83,7 @@ export const defaultState = {
     fontSize: 11
   },
   watermark: {
-    image: { dataUrl: "" },
+    image: { dataUrl: "", imageFileName: "" },
     opacity: 0.08,
     darkness: 0.95,
     contrast: 1.15,

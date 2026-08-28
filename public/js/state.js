@@ -55,6 +55,9 @@ export function normalizeState(nextState) {
   nextState.template ||= structuredClone(defaultState.template);
   nextState.template.headerBox ||= structuredClone(defaultState.template.headerBox);
   nextState.template.headerImage ||= structuredClone(defaultState.template.headerImage);
+  nextState.template.headerImage.imageFileName ||= "";
+  nextState.template.footerImage ||= structuredClone(defaultState.template.footerImage);
+  nextState.template.footerImage.imageFileName ||= "";
   nextState.template.footerBox ||= structuredClone(defaultState.template.footerBox);
   nextState.template.pageNumberConfig ||= structuredClone(defaultState.template.pageNumberConfig);
   nextState.template.pageMargins ||= structuredClone(defaultState.template.pageMargins);
@@ -66,7 +69,8 @@ export function normalizeState(nextState) {
     nextState.questionStyle.fontSize = defaultState.questionStyle.fontSize;
   }
   nextState.watermark ||= structuredClone(defaultState.watermark);
-  nextState.watermark.image ||= { dataUrl: "" };
+  nextState.watermark.image ||= { dataUrl: "", imageFileName: "" };
+  nextState.watermark.image.imageFileName ||= "";
   nextState.watermark.scale ??= 1.2;
   nextState.pageLayout ||= structuredClone(defaultState.pageLayout);
   nextState.pageLayout.columnGap = clampNonNegativeInteger(nextState.pageLayout.columnGap, defaultState.pageLayout.columnGap);
@@ -368,7 +372,7 @@ export function redo() {
 }
 
 export function placeHeaderImage(imageMeta) {
-  state.template.headerImage = imageMeta || { dataUrl: "", width: 0, height: 0 };
+  state.template.headerImage = imageMeta || { dataUrl: "", width: 0, height: 0, imageFileName: "" };
   const maxWidth = PAGE.width - 24;
   const targetWidth = clamp(
     state.template.headerBox.width || maxWidth,
@@ -381,7 +385,7 @@ export function placeHeaderImage(imageMeta) {
 }
 
 export function placeFooterImage(imageMeta) {
-  state.template.footerImage = imageMeta || { dataUrl: "", width: 0, height: 0 };
+  state.template.footerImage = imageMeta || { dataUrl: "", width: 0, height: 0, imageFileName: "" };
   const maxWidth = PAGE.width - 24;
   const targetWidth = clamp(
     state.template.footerBox.width || maxWidth,

@@ -77,11 +77,11 @@ export async function bulkInsertQuestions(questionsPayload) {
   return data;
 }
 
-export async function exportPdfOnServer(html, examState) {
+export async function exportPdfOnServer(html) {
   const response = await fetch("/api/export/pdf", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ html, exam: examState })
+    body: JSON.stringify({ html })
   });
   if (!response.ok) {
     throw new Error("PDF export failed");

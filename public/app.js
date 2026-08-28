@@ -356,6 +356,9 @@ function syncToolbarFields() {
   elements.watermarkDarknessInput.value = state.watermark.darkness;
   elements.watermarkContrastInput.value = state.watermark.contrast;
   if (elements.watermarkControls) elements.watermarkControls.hidden = !state.watermark.image?.dataUrl;
+  updateFileInputLabel(elements.headerImageInput, state.template.headerImage?.imageFileName || (state.template.headerImage?.dataUrl ? "Header image" : ""));
+  updateFileInputLabel(elements.footerImageInput, state.template.footerImage?.imageFileName || (state.template.footerImage?.dataUrl ? "Footer image" : ""));
+  updateFileInputLabel(elements.watermarkImageInput, state.watermark.image?.imageFileName || (state.watermark.image?.dataUrl ? "Watermark image" : ""));
   applySidebarWidth(state.ui.sidebarWidth);
 }
 
@@ -594,7 +597,7 @@ function bindGlobalInputs() {
         return;
       }
       const html = await buildPrintableHtml();
-      const blob = await exportPdfOnServer(html, state);
+      const blob = await exportPdfOnServer(html);
       downloadBlob(blob, "test-builder-export.pdf");
       setStatus("PDF exported");
     } catch (error) {
@@ -651,6 +654,7 @@ function bindGlobalInputs() {
     if (!file) return;
     updateFileInputLabel(event.target, file.name);
     placeHeaderImage(await readImageFile(file));
+    state.template.headerImage.imageFileName = file.name;
     rerenderPreview("Header banner updated");
   });
 
@@ -859,6 +863,7 @@ function bindGlobalInputs() {
     if (!file) return;
     updateFileInputLabel(event.target, file.name);
     state.watermark.image.dataUrl = await readFileAsDataUrl(file);
+    state.watermark.image.imageFileName = file.name;
     if (elements.watermarkControls) elements.watermarkControls.hidden = false;
     rerenderPreview("Watermark image updated");
   });
@@ -884,6 +889,7 @@ function bindGlobalInputs() {
     if (!file) return;
     updateFileInputLabel(event.target, file.name);
     placeFooterImage(await readImageFile(file));
+    state.template.footerImage.imageFileName = file.name;
     rerenderPreview("Footer image updated");
   });
 
@@ -905,13 +911,16 @@ function bindGlobalInputs() {
       wrapper.classList.remove("has-file");
       if (kind === "watermark-image") {
         state.watermark.image.dataUrl = "";
+        state.watermark.image.imageFileName = "";
         if (elements.watermarkControls) elements.watermarkControls.hidden = true;
         rerenderPreview("Watermark removed");
       } else if (kind === "header-image") {
         placeHeaderImage(null);
+        state.template.headerImage.imageFileName = "";
         rerenderPreview("Header image removed");
       } else if (kind === "footer-image") {
         placeFooterImage(null);
+        state.template.footerImage.imageFileName = "";
         rerenderPreview("Footer image removed");
       } else if (kind === "question-image") {
         const card = clearBtn.closest(".question-editor-card");
@@ -1151,9 +1160,9 @@ async function buildPrintableHtml() {
   await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
   const pageHtml = Array.from(document.querySelectorAll(".exam-page")).map((page) => {
-    const clonedPage = cloneWithInlineStyles(page);
     const wrapper = document.createElement("div");
     wrapper.className = "print-page-container";
+    const clonedPage = page.cloneNode(true);
     wrapper.appendChild(clonedPage);
     return wrapper.outerHTML;
   });
@@ -1163,12 +1172,21 @@ async function buildPrintableHtml() {
 
   if (!pageHtml.length) throw new Error("No pages found to export");
 
+  const cssFiles = [
+    "./css/base.css",
+    "./css/layout.css",
+    "./css/components.css",
+    "./css/modals.css",
+    "./css/preview.css"
+  ];
   let cssContent = "";
   try {
-    const response = await fetch("./styles.css");
-    cssContent = await response.text();
+    const results = await Promise.all(
+      cssFiles.map((file) => fetch(file).then((response) => response.text()))
+    );
+    cssContent = results.join("\n");
   } catch (error) {
-    console.warn("Failed to fetch styles.css:", error);
+    console.warn("Failed to fetch export CSS:", error);
   }
 
   const exportResetCss = `
@@ -1216,7 +1234,6 @@ body {
   <style>
     ${exportResetCss}
     ${cssContent}
-    ${exportResetCss}
     * {
       margin: 0;
       padding: 0;

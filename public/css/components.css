@@ -425,7 +425,7 @@ body[data-theme="dark"] .inline-text-editor {
 
 .file-input-wrapper.has-file .file-input-btn {
   border-style: solid;
-  border-color: var(--line-strong);
+  border-color: var(--accent);
   background: var(--panel-inset);
   color: var(--text);
 }
