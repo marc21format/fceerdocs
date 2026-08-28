@@ -1234,7 +1234,58 @@ function buildExportPageHtml(pageNodes, imageMap) {
   });
 }
 
-function buildExportHtml(pageHtml, cssContent, exportResetCss) {
+const EMBEDDED_FONT_FILES = [
+  { file: "./fonts/carlito-regular.woff2", weight: 400, style: "normal" },
+  { file: "./fonts/carlito-bold.woff2", weight: 700, style: "normal" },
+  { file: "./fonts/carlito-italic.woff2", weight: 400, style: "italic" },
+  { file: "./fonts/carlito-bolditalic.woff2", weight: 700, style: "italic" }
+];
+
+function exportFontFamily() {
+  const configured = String(state.questionStyle?.fontFamily || "");
+  const stack = ["EmbeddedText"];
+  if (configured && configured.toLowerCase() !== "embeddedtext") stack.push(configured);
+  stack.push("Arial", "Helvetica", "sans-serif");
+  return stack.join(", ");
+}
+
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+  }
+  return btoa(binary);
+}
+
+async function fetchEmbeddedFontCss() {
+  try {
+    const faces = await Promise.all(
+      EMBEDDED_FONT_FILES.map(async (font) => {
+        const response = await fetch(font.file);
+        if (!response.ok) throw new Error(`font ${font.file}`);
+        const buffer = await response.arrayBuffer();
+        const base64 = arrayBufferToBase64(buffer);
+        return `@font-face { font-family: "EmbeddedText"; src: url("data:font/woff2;base64,${base64}") format("woff2"); font-weight: ${font.weight}; font-style: ${font.style}; font-display: swap; }`;
+      })
+    );
+    return `${faces.join("\n")}
+.question-preview,
+.question-stem,
+.choice-text,
+.question-passage-text,
+.page-title-block,
+.page-instruction-block {
+  font-family: ${exportFontFamily()} !important;
+}`;
+  } catch (error) {
+    console.warn("Failed to embed export fonts:", error);
+    return "";
+  }
+}
+
+function buildExportHtml(pageHtml, cssContent, exportResetCss, fontCss = "") {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1242,6 +1293,7 @@ function buildExportHtml(pageHtml, cssContent, exportResetCss) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Exam Export</title>
   <style>
+    ${fontCss}
     ${exportResetCss}
     ${cssContent}
     * {
@@ -1299,6 +1351,8 @@ async function buildPrintableHtml() {
     console.warn("Failed to fetch export CSS:", error);
   }
 
+  const exportFontCss = await fetchEmbeddedFontCss();
+
   const exportResetCss = `
 body, .exam-page, .page-content, .page-bg { background: white !important; color: #111827 !important; }
 :root { --page-bg: #ffffff; --text: #111827; --bg: #ffffff; }
@@ -1347,14 +1401,14 @@ body {
 
   let imageMap = new Map();
   let pageHtml = buildExportPageHtml(pageNodes, imageMap);
-  let html = buildExportHtml(pageHtml, cssContent, exportResetCss);
+  let html = buildExportHtml(pageHtml, cssContent, exportResetCss, exportFontCss);
   let size = exportHtmlByteLength(html);
   let stepIndex = 0;
 
   while (size > EXPORT_PAYLOAD_LIMIT_BYTES && stepIndex < qualitySteps.length) {
     imageMap = await buildExportImageMap(imageUrls, qualitySteps[stepIndex]);
     pageHtml = buildExportPageHtml(pageNodes, imageMap);
-    html = buildExportHtml(pageHtml, cssContent, exportResetCss);
+    html = buildExportHtml(pageHtml, cssContent, exportResetCss, exportFontCss);
     size = exportHtmlByteLength(html);
     stepIndex += 1;
   }

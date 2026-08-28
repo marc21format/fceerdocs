@@ -1143,7 +1143,7 @@ export function paginateQuestions() {
   const earliestContentTop = Math.min(firstPageContentTop, continuationContentTop);
   const footerReserve = Math.max(earliestContentTop + 16, footerTop - footerBuffer);
   const contentBottom = Math.min(footerReserve, PAGE.height - state.template.pageMargins.bottom);
-  const SAFETY_PIXELS = (state.pageLayout && typeof state.pageLayout.safetyPixels === 'number') ? state.pageLayout.safetyPixels : 1;
+  const SAFETY_PIXELS = (state.pageLayout && typeof state.pageLayout.safetyPixels === 'number') ? state.pageLayout.safetyPixels : 12;
   const firstPageColumnHeight = Math.max(60, contentBottom - firstPageContentTop - SAFETY_PIXELS);
   const continuationColumnHeight = Math.max(60, contentBottom - continuationContentTop - SAFETY_PIXELS);
   const measured = measureQuestionHeights(columnWidth);
