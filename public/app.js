@@ -7,6 +7,9 @@ import {
   PAGE,
   QUESTION_IMAGE_MAX_DIMENSION,
   QUESTION_IMAGE_JPEG_QUALITY,
+  EXPORT_IMAGE_MAX_DIMENSION,
+  EXPORT_IMAGE_JPEG_QUALITY,
+  EXPORT_PAYLOAD_LIMIT_BYTES,
   PX_PER_INCH,
   HALF_INCH,
   SIDEBAR_MIN_WIDTH,
@@ -71,7 +74,8 @@ import { initCsvImport } from './js/csv-import.js';
 import {
   readImageFile,
   readQuestionImageFile,
-  readFileAsDataUrl
+  readFileAsDataUrl,
+  optimizeImageDataUrl
 } from './js/image-utils.js';
 
 import {
@@ -341,12 +345,18 @@ function syncToolbarFields() {
   if (elements.columnGapInput) {
     elements.columnGapInput.value = Number(state.pageLayout.columnGap).toFixed(1);
   }
-  elements.titleTextInput.innerHTML = state.template.titleBlock.text;
-  elements.instructionTextInput.innerHTML = state.template.instructionBlock.text;
+  if (document.activeElement !== elements.titleTextInput) {
+    elements.titleTextInput.innerHTML = state.template.titleBlock.text;
+  }
+  if (document.activeElement !== elements.instructionTextInput) {
+    elements.instructionTextInput.innerHTML = state.template.instructionBlock.text;
+  }
   if (elements.titleFontsizeDisplay) elements.titleFontsizeDisplay.textContent = state.template.titleBlock.style.fontSize;
   if (elements.instructionFontsizeDisplay) elements.instructionFontsizeDisplay.textContent = state.template.instructionBlock.style.fontSize;
   elements.titleTextInput.style.fontSize = `${state.template.titleBlock.style.fontSize}px`;
   elements.instructionTextInput.style.fontSize = `${state.template.instructionBlock.style.fontSize}px`;
+  elements.titleTextInput.style.fontFamily = state.template.titleBlock.style.fontFamily;
+  elements.instructionTextInput.style.fontFamily = state.template.instructionBlock.style.fontFamily;
   elements.titleTextInput.style.textAlign = state.template.titleBlock.style.textAlign || "center";
   elements.instructionTextInput.style.textAlign = state.template.instructionBlock.style.textAlign || "center";
   updateTitleAlignBtnStates();
@@ -767,6 +777,17 @@ function bindGlobalInputs() {
     rerenderPreview("Instructions updated");
   });
 
+  function setupPastePlainText(inputEl) {
+    inputEl.addEventListener("paste", (e) => {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData("text/plain");
+      document.execCommand("insertText", false, text);
+    });
+  }
+
+  setupPastePlainText(elements.titleTextInput);
+  setupPastePlainText(elements.instructionTextInput);
+
   function setupFormatButtons(formatBtns, inputEl) {
     function updateFormatBtnStates() {
       formatBtns.forEach((btn) => {
@@ -1152,6 +1173,83 @@ function capturePageAsSvg(pageElement) {
   `;
 }
 
+function collectExportImageDataUrls() {
+  const results = new Set();
+  const add = (value) => {
+    if (typeof value === "string" && value.startsWith("data:image/") && value.length > 0) {
+      results.add(value);
+    }
+  };
+  (state.questions || []).forEach((question) => add(question?.image?.dataUrl));
+  add(state.template?.headerImage?.dataUrl);
+  add(state.template?.footerImage?.dataUrl);
+  add(state.watermark?.image?.dataUrl);
+  return Array.from(results);
+}
+
+async function buildExportImageMap(dataUrls, options) {
+  const map = new Map();
+  const entries = await Promise.all(
+    dataUrls.map(async (url) => [url, await optimizeImageDataUrl(url, options)])
+  );
+  entries.forEach(([url, optimized]) => map.set(url, optimized));
+  return map;
+}
+
+function applyExportImageMap(pageNode, imageMap) {
+  const clone = pageNode.cloneNode(true);
+  clone.querySelectorAll("img").forEach((img) => {
+    const src = img.getAttribute("src");
+    if (src && imageMap.has(src)) {
+      img.setAttribute("src", imageMap.get(src));
+    }
+  });
+  return clone;
+}
+
+function buildExportPageHtml(pageNodes, imageMap) {
+  return pageNodes.map((page) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "print-page-container";
+    wrapper.appendChild(applyExportImageMap(page, imageMap));
+    return wrapper.outerHTML;
+  });
+}
+
+function buildExportHtml(pageHtml, cssContent, exportResetCss) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam Export</title>
+  <style>
+    ${exportResetCss}
+    ${cssContent}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: white !important;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  ${pageHtml.join("\n")}
+</body>
+</html>`;
+}
+
+function exportHtmlByteLength(html) {
+  return new TextEncoder().encode(html).length;
+}
+
 async function buildPrintableHtml() {
   const previousSelection = state.ui.selected;
   state.ui.selected = null;
@@ -1159,18 +1257,12 @@ async function buildPrintableHtml() {
   await document.fonts.ready;
   await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
-  const pageHtml = Array.from(document.querySelectorAll(".exam-page")).map((page) => {
-    const wrapper = document.createElement("div");
-    wrapper.className = "print-page-container";
-    const clonedPage = page.cloneNode(true);
-    wrapper.appendChild(clonedPage);
-    return wrapper.outerHTML;
-  });
-
-  state.ui.selected = previousSelection;
-  renderPages();
-
-  if (!pageHtml.length) throw new Error("No pages found to export");
+  const pageNodes = Array.from(document.querySelectorAll(".exam-page"));
+  if (!pageNodes.length) {
+    state.ui.selected = previousSelection;
+    renderPages();
+    throw new Error("No pages found to export");
+  }
 
   const cssFiles = [
     "./css/base.css",
@@ -1225,33 +1317,36 @@ body {
 }
 `;
 
-  const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Exam Export</title>
-  <style>
-    ${exportResetCss}
-    ${cssContent}
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+  const imageUrls = collectExportImageDataUrls();
+  const qualitySteps = [
+    { dimension: EXPORT_IMAGE_MAX_DIMENSION, quality: EXPORT_IMAGE_JPEG_QUALITY },
+    { dimension: 650, quality: 0.7 },
+    { dimension: 500, quality: 0.6 },
+    { dimension: 400, quality: 0.5 }
+  ];
 
-    body {
-      background: white !important;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, sans-serif;
-    }
-  </style>
-</head>
-<body>
-  ${pageHtml.join("\n")}
-</body>
-</html>`;
+  let imageMap = new Map();
+  let pageHtml = buildExportPageHtml(pageNodes, imageMap);
+  let html = buildExportHtml(pageHtml, cssContent, exportResetCss);
+  let size = exportHtmlByteLength(html);
+  let stepIndex = 0;
+
+  while (size > EXPORT_PAYLOAD_LIMIT_BYTES && stepIndex < qualitySteps.length) {
+    imageMap = await buildExportImageMap(imageUrls, qualitySteps[stepIndex]);
+    pageHtml = buildExportPageHtml(pageNodes, imageMap);
+    html = buildExportHtml(pageHtml, cssContent, exportResetCss);
+    size = exportHtmlByteLength(html);
+    stepIndex += 1;
+  }
+
+  state.ui.selected = previousSelection;
+  renderPages();
+
+  if (size > EXPORT_PAYLOAD_LIMIT_BYTES) {
+    throw new Error(
+      "Napakaraming/laki ng images sa exam para sa export (lumagpas sa limit ng server). Bawasan ang ilang images o gumamit ng mas maliliit na file bago i-export."
+    );
+  }
 
   return html;
 }

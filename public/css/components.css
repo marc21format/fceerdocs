@@ -262,6 +262,9 @@ body[data-theme="dark"] .stem-format-btn.active {
   color: var(--text);
   outline: none;
   line-height: 1.5;
+  direction: ltr;
+  unicode-bidi: isolate;
+  white-space: pre-wrap;
 }
 
 .title-text-input:empty::before,

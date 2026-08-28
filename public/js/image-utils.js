@@ -1,6 +1,8 @@
 import {
   QUESTION_IMAGE_MAX_DIMENSION,
-  QUESTION_IMAGE_JPEG_QUALITY
+  QUESTION_IMAGE_JPEG_QUALITY,
+  EXPORT_IMAGE_MAX_DIMENSION,
+  EXPORT_IMAGE_JPEG_QUALITY
 } from './config.js';
 
 export function readFileAsDataUrl(file) {
@@ -76,4 +78,38 @@ export async function readQuestionImageFile(file) {
     width: useOptimized ? width : sourceWidth,
     height: useOptimized ? height : sourceHeight
   };
+}
+
+export async function optimizeImageDataUrl(
+  dataUrl,
+  options = {}
+) {
+  if (!dataUrl || typeof dataUrl !== "string") return dataUrl;
+  if (!dataUrl.startsWith("data:image/")) return dataUrl;
+  if (dataUrl.startsWith("data:image/svg+xml")) return dataUrl;
+
+  const requestedDimension = Number(options.maxDimension) || EXPORT_IMAGE_MAX_DIMENSION;
+  const requestedQuality = Number.isFinite(Number(options.quality))
+    ? Number(options.quality)
+    : EXPORT_IMAGE_JPEG_QUALITY;
+
+  const image = await loadImageFromDataUrl(dataUrl);
+  const sourceWidth = image.naturalWidth || image.width || 0;
+  const sourceHeight = image.naturalHeight || image.height || 0;
+  if (!sourceWidth || !sourceHeight) return dataUrl;
+
+  const scale = Math.min(1, requestedDimension / Math.max(sourceWidth, sourceHeight));
+  const width = Math.max(1, Math.round(sourceWidth * scale));
+  const height = Math.max(1, Math.round(sourceHeight * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d", { alpha: true });
+  if (!context) return dataUrl;
+  context.drawImage(image, 0, 0, width, height);
+
+  const hasTransparency = canvasHasTransparency(canvas);
+  const result = hasTransparency ? canvas.toDataURL("image/png") : canvas.toDataURL("image/jpeg", requestedQuality);
+
+  return result.length < dataUrl.length ? result : dataUrl;
 }
