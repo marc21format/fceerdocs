@@ -268,6 +268,11 @@ export async function handleApiRoute(req, res, pathname, requestUrl) {
     });
     req.on("end", async () => {
       try {
+        const bodyBytes = Buffer.byteLength(body, "utf8");
+        if (bodyBytes > 4.4 * 1024 * 1024) {
+          send(res, 413, JSON.stringify({ error: "Masyadong malaki ang exam para i-export sa server. Bawasan ang mga images o gumamit ng mas maliliit na file bago i-export." }), "application/json; charset=utf-8");
+          return;
+        }
         const payload = JSON.parse(body);
         const html = payload.html;
         

@@ -106,9 +106,14 @@ export async function optimizeImageDataUrl(
   canvas.height = height;
   const context = canvas.getContext("2d", { alpha: true });
   if (!context) return dataUrl;
+  const flattenToWhite = options.flattenTransparency !== false;
+  if (flattenToWhite) {
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, width, height);
+  }
   context.drawImage(image, 0, 0, width, height);
 
-  const hasTransparency = canvasHasTransparency(canvas);
+  const hasTransparency = flattenToWhite ? false : canvasHasTransparency(canvas);
   const result = hasTransparency ? canvas.toDataURL("image/png") : canvas.toDataURL("image/jpeg", requestedQuality);
 
   return result.length < dataUrl.length ? result : dataUrl;

@@ -1187,10 +1187,28 @@ function collectExportImageDataUrls() {
   return Array.from(results);
 }
 
+function collectTransparencyRequiredDataUrls() {
+  const results = new Set();
+  const add = (value) => {
+    if (typeof value === "string" && value.startsWith("data:image/") && value.length > 0) {
+      results.add(value);
+    }
+  };
+  add(state.template?.headerImage?.dataUrl);
+  add(state.template?.footerImage?.dataUrl);
+  add(state.watermark?.image?.dataUrl);
+  return results;
+}
+
 async function buildExportImageMap(dataUrls, options) {
+  const transparencyUrls = collectTransparencyRequiredDataUrls();
   const map = new Map();
   const entries = await Promise.all(
-    dataUrls.map(async (url) => [url, await optimizeImageDataUrl(url, options)])
+    dataUrls.map(async (url) => {
+      const preserveTransparency = transparencyUrls.has(url);
+      const imageOptions = { ...options, flattenTransparency: preserveTransparency ? false : true };
+      return [url, await optimizeImageDataUrl(url, imageOptions)];
+    })
   );
   entries.forEach(([url, optimized]) => map.set(url, optimized));
   return map;
@@ -1247,7 +1265,7 @@ function buildExportHtml(pageHtml, cssContent, exportResetCss) {
 }
 
 function exportHtmlByteLength(html) {
-  return new TextEncoder().encode(html).length;
+  return new TextEncoder().encode(JSON.stringify({ html })).length;
 }
 
 async function buildPrintableHtml() {
@@ -1319,10 +1337,12 @@ body {
 
   const imageUrls = collectExportImageDataUrls();
   const qualitySteps = [
-    { dimension: EXPORT_IMAGE_MAX_DIMENSION, quality: EXPORT_IMAGE_JPEG_QUALITY },
-    { dimension: 650, quality: 0.7 },
-    { dimension: 500, quality: 0.6 },
-    { dimension: 400, quality: 0.5 }
+    { dimension: EXPORT_IMAGE_MAX_DIMENSION, quality: EXPORT_IMAGE_JPEG_QUALITY, flattenTransparency: true },
+    { dimension: 650, quality: 0.7, flattenTransparency: true },
+    { dimension: 500, quality: 0.6, flattenTransparency: true },
+    { dimension: 400, quality: 0.5, flattenTransparency: true },
+    { dimension: 340, quality: 0.45, flattenTransparency: true },
+    { dimension: 300, quality: 0.4, flattenTransparency: true }
   ];
 
   let imageMap = new Map();
